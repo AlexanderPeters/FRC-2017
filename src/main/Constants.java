@@ -102,6 +102,8 @@ public interface Constants {
 	public final DoubleSolenoid.Value OFF = Value.kOff;
 	//UDP_PORT
 	public final int udpPort = 5803;
+	public final int udpPortForLogging = 5802;
+	public final String KangarooIP = "roo.frc-robot.local";
 	//DRIVERCAM_FPS
 	public final int fps = 30;
 	//WHEEL_SIZE

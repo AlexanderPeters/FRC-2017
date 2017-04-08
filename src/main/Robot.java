@@ -1,5 +1,7 @@
 package main;
 
+import java.net.SocketException;
+
 import Util.SmartDashboardInteractions;
 import controllers.UDPController;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -53,7 +55,7 @@ public class Robot extends IterativeRobot implements Constants{
 	public static GameState gameState;
 	public static RobotState robotState = RobotState.Neither;
     public static Looper mEnabledLooper = new Looper(kEnabledLooperDt);
-    public static UDPForVision comms = new UDPForVision();
+    public static UDPForVision comms;
 	
     Command autoCommand;
     SendableChooser<Command> chooser;
@@ -76,6 +78,12 @@ public class Robot extends IterativeRobot implements Constants{
 		shooter = new FlyWheel();
 		hd = new Hood();
 		dc = new DriveCamera();
+		try {
+			comms = new UDPForVision();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//This has to be last as the subsystems can not be null when a command requires them
 		oi = new OI();
 
