@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import main.Constants;
 import main.HardwareAdapter;
 import main.Robot;
@@ -74,12 +75,14 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		
 	}
 	public void driveVelocity(double throttle, double heading) {
-		if(Robot.gameState == Robot.GameState.Teleop) 
+		if(Robot.gameState == Robot.GameState.Teleop) {
 			driveTrain.arcadeDrive(throttle, heading); 
+		}
 	}
 
 	public void driveStraight(double throttle) {
 		double theta = NavX.getYaw();
+		putGyroErrorToSmartDashboard(NavX.getYaw());
 		if(Math.signum(throttle) > 0) {
 			//Make this PID Controlled
 			driveTrain.arcadeDrive(helper.handleOverPower(throttle), helper.handleOverPower(theta * straightLineKP)); 
@@ -106,6 +109,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		distanceController.setContinuous(true);
 		distanceController.enable();
 		distanceController.setSetpoint(distance);
+		putGyroErrorToSmartDashboard(NavX.getYaw());
 		//System.out.println("r" + distanceControllerRate);
 		this.driveVelocity(distanceControllerRate, 0.0);//Gyro code in drive straight I think is messed up
 			
@@ -126,6 +130,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		bigTurnController.setContinuous(true);
 		bigTurnController.enable();
 		bigTurnController.setSetpoint(heading);
+		putGyroErrorToSmartDashboard(NavX.getYaw() - heading);
 		this.driveVelocity(0.0, bigTurnControllerRate);
 	}
 	
@@ -145,6 +150,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		smallTurnController.setContinuous(true);
 		smallTurnController.enable();
 		smallTurnController.setSetpoint(heading);
+		putGyroErrorToSmartDashboard(NavX.getYaw() - heading);
 		this.driveVelocity(0.0, smallTurnControllerRate);
 	}
 	
@@ -199,6 +205,12 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	/*******************
 	 * SUPPORT METHODS *
 	 *******************/
+	private void putGyroErrorToSmartDashboard(double num) {
+		SmartDashboard.putDouble("Gyro", num);
+	}
+	private void putEncoderErrorToSmartDashboard(double num) {
+		SmartDashboard.putDouble("Encoder", num);
+	}
 	private double getLeftEncoderPosition() {
 		return leftDriveMaster.getEncPosition();
 	}

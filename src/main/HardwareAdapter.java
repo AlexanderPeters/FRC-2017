@@ -8,45 +8,53 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import lib.joystick.XboxController;
 
-public interface HardwareAdapter {
+public interface HardwareAdapter extends Constants {
 	//OI
-	public static XboxController xbox = new XboxController(Constants.Xbox_Port);
+	public static XboxController xbox = new XboxController(Xbox_Port);
 	
 	//DriveTrain
 	//Verified for Competition Bot 1 2/13/17
-	public static CANTalon leftDriveMaster = new CANTalon(Constants.LEFT_Drive_Master);
-	public static CANTalon leftDriveSlave1 = new CANTalon(Constants.LEFT_Drive_Slave1);
-	//public static CANTalon leftDriveSlave2 = new CANTalon(Constants.LEFT_Drive_Slave2);
-	public static CANTalon rightDriveMaster = new CANTalon(Constants.RIGHT_Drive_Master);
-	public static CANTalon rightDriveSlave1 = new CANTalon(Constants.RIGHT_Drive_Slave1);
-	//public static CANTalon rightDriveSlave2 = new CANTalon(Constants.RIGHT_Drive_Slave2);
+	public static CANTalon leftDriveMaster = new CANTalon(LEFT_Drive_Master);
+	public static CANTalon leftDriveSlave1 = new CANTalon(LEFT_Drive_Slave1);
+	//public static CANTalon leftDriveSlave2 = new CANTalon(LEFT_Drive_Slave2);
+	public static CANTalon rightDriveMaster = new CANTalon(RIGHT_Drive_Master);
+	public static CANTalon rightDriveSlave1 = new CANTalon(RIGHT_Drive_Slave1);
+	//public static CANTalon rightDriveSlave2 = new CANTalon(RIGHT_Drive_Slave2);
 	
 	//Shooter
-	public static CANTalon shooter = new CANTalon(Constants.Shooter_Flywheel);
-	public static Servo hoodServo = new Servo(Constants.Shooter_Hood);
-	public static DigitalInput hoodSwitch = new DigitalInput(Constants.Shooter_Switch);
-	public static Servo shooterIndexer = new Servo(Constants.Shooter_Indexer);
+	public static CANTalon flyWheel = new CANTalon(Shooter_Flywheel);
 	
 	//Climber
-	public static Spark climberMotor = new Spark(Constants.Climber_Motor);
-	//public static Servo climberLeft = new Servo(Constants.LEFT_Climber_Intake);
-	//public static Servo climberRight = new Servo(Constants.RIGHT_Climber_Intake);
+	public static Spark climberMotor = new Spark(Climber_Motor);
 	
-	//Intake
-	public static Spark intakeMotor = new Spark(Constants.Intake_Motor);
+	//Ball Intake
+	public static Spark intakeMotor = new Spark(Intake_Motor);
+	public static DigitalInput intakeSwitch = new DigitalInput(Intake_Switch);
+	
+	//Gear Intake
+	public static DigitalInput shootProxSwitch = new DigitalInput(ShootProx_Switch);
+	//The naming of this while functional is also an inside joke for anyone on the team in 2015
+	public static DoubleSolenoid shootDoor = new DoubleSolenoid(PCM_Port, HOOD_EXT, HOOD_RET);
 	
 	//Stirrer
-	public static Spark stirrerMotor = new Spark(Constants.Stirrer_Motor);
+	public static Spark stirrerMotor = new Spark(Stirrer_Motor);
 	
-	//Pnuematics
-	public static DoubleSolenoid shifter = new DoubleSolenoid(Constants.PCM_Port, Constants.SHIFTER_EXT, Constants.SHIFTER_RET);
-	public static DoubleSolenoid gearMech = new DoubleSolenoid(Constants.PCM_Port, Constants.GEAR_EXT, Constants.GEAR_RET);
-	public static Compressor comp = new Compressor(Constants.PCM_Port);
+	//GearMech
+	public static DoubleSolenoid gearMech = new DoubleSolenoid(PCM_Port, GEAR_EXT, GEAR_RET);
+	public static DigitalInput gearSwitch = new DigitalInput(HasGear_Switch);
+
+	//Other Pnuematics
+	public static DoubleSolenoid shifter = new DoubleSolenoid(PCM_Port, SHIFTER_EXT, SHIFTER_RET);
+	public static Compressor comp = new Compressor(PCM_Port);
+	
+	//Driver Alert
+	public static DigitalOutput alertRelay = new DigitalOutput(DriverAlert_DigiOut);
 	
 	//PDP
-	public static PowerDistributionPanel pdp = new PowerDistributionPanel(Constants.PDP_Port);
+	public static PowerDistributionPanel pdp = new PowerDistributionPanel(PDP_Port);
 	
 
 }

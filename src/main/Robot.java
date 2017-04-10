@@ -1,8 +1,10 @@
 package main;
 
+import java.io.IOException;
 import java.net.SocketException;
 
 import Util.SmartDashboardInteractions;
+import controllers.SensorChecker;
 import controllers.UDPController;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -16,13 +18,15 @@ import main.commands.auto.centerGearAuto;
 import main.commands.auto.doNothing;
 import main.commands.auto.leftGearAuto;
 import main.commands.auto.rightGearAuto;
+import main.commands.drivetrain.DriveDistance;
+import main.commands.drivetrain.TurnToAngle;
 import main.subsystems.Climber;
 import main.subsystems.DriveCamera;
 import main.subsystems.DriveTrain;
+import main.subsystems.DriverAlerts;
 import main.subsystems.FlyWheel;
-import main.subsystems.Hood;
-import main.subsystems.Indexer;
 import main.subsystems.Intake;
+import main.subsystems.OtherSensors;
 import main.subsystems.Pneumatics;
 import main.subsystems.Stirrer;
 
@@ -48,16 +52,17 @@ public class Robot extends IterativeRobot implements Constants{
 	public static Intake in;
 	public static Stirrer str;
 	public static FlyWheel shooter;
-	public static Hood hd;
-	public static Indexer id;
 	public static DriveCamera dc;
+	public static DriverAlerts da;
+	public static OtherSensors sensors;
 	public static SmartDashboardInteractions sdb;
 	public static GameState gameState;
 	public static RobotState robotState = RobotState.Neither;
-    public static Looper mEnabledLooper = new Looper(kEnabledLooperDt);
+    //public static Looper mEnabledLooper = new Looper(kEnabledLooperDt);
     public static UDPForVision comms;
 	
     Command autoCommand;
+    Command pidCommand;
     SendableChooser<Command> chooser;
 
     /**
@@ -74,20 +79,15 @@ public class Robot extends IterativeRobot implements Constants{
 		dt = new DriveTrain();
 		cl = new Climber();
 		in = new Intake();
-		id = new Indexer();
 		shooter = new FlyWheel();
-		hd = new Hood();
 		dc = new DriveCamera();
-		try {
-			comms = new UDPForVision();
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		da = new DriverAlerts();//Must be initialized before OtherSensors which uses it by calling commands
+		sensors = new OtherSensors();
+		comms = new UDPForVision();
 		//This has to be last as the subsystems can not be null when a command requires them
-		oi = new OI();
 
-        mEnabledLooper.register(new UDPController());
+       //mEnabledLooper.register(new UDPController());
+        //mEnabledLooper.register(new SensorChecker());
     
 		chooser = new SendableChooser<Command>();
         chooser.addDefault("Do Nothing Auto", new doNothing());
@@ -114,7 +114,14 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Distance KD", displacementKD);
         SmartDashboard.putDouble("Distance Tolerance", kToleranceDisplacementDefault);
         SmartDashboard.putDouble("Distance MaxVoltage", kMaxVoltageDisp);
-
+        
+        SmartDashboard.putDouble("Gyro", 0.0);
+        SmartDashboard.putDouble("Encoder Distance", 0.0);
+        SmartDashboard.putDouble("Angle Target", 0.0);
+        SmartDashboard.putDouble("Distance To Drive To", 0.0);
+        
+       oi = new OI();
+       
 
     }
 	
@@ -125,7 +132,7 @@ public class Robot extends IterativeRobot implements Constants{
      */
     public void disabledInit(){
 		// Configure loopers
-        mEnabledLooper.stop();
+      //  mEnabledLooper.stop();
     }
 	
 	public void disabledPeriodic() {
@@ -146,7 +153,7 @@ public class Robot extends IterativeRobot implements Constants{
     	autoCommand = (Command) chooser.getSelected();
     	
     	// Configure loopers
-        mEnabledLooper.start();
+        //mEnabledLooper.start();
     	
     	if(autoCommand != null) autoCommand.start();
     }
@@ -163,7 +170,7 @@ public class Robot extends IterativeRobot implements Constants{
     	gameState = GameState.Teleop;
     	
     	// Configure loopers
-        mEnabledLooper.start();
+        //mEnabledLooper.start();
     	
     	/* This makes sure that the autonomous stops running when
            teleop starts running. If you want the autonomous to 
@@ -178,6 +185,11 @@ public class Robot extends IterativeRobot implements Constants{
      */
     public void teleopPeriodic() {
     	gameState = GameState.Teleop;
+    	pidCommand = new TurnToAngle();
+    	if(OI.getXbox().start.get()) pidCommand.start();
+    	if(OI.getXbox().select.get()) pidCommand.cancel();
+    	comms.poke();		
+    	sensors.check();
     	Scheduler.getInstance().run();
     }
     

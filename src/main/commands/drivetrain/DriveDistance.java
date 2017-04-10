@@ -44,6 +44,18 @@ public class DriveDistance extends Command {
     	this.maxV = SmartDashboard.getDouble("Distance MaxVoltage", 0.0);
 
     }
+    
+    @SuppressWarnings("deprecation")
+	public DriveDistance() {//feet
+    	requires(Robot.dt);
+    	this.distance = -SmartDashboard.getDouble("Distance To Drive To", 0.0);
+    	this.KP = SmartDashboard.getDouble("Distance KP", 0.0);
+    	this.KI = SmartDashboard.getDouble("Distance KI", 0.0);
+    	this.KD = SmartDashboard.getDouble("Distance KD", 0.0);
+    	this.tolerance = SmartDashboard.getDouble("Distance Tolerance", 0.0);
+    	this.maxV = SmartDashboard.getDouble("Distance MaxVoltage", 0.0);
+
+    }
 
     // Called just before this Command runs the first time
     protected void initialize() {
