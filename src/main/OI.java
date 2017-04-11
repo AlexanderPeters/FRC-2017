@@ -38,12 +38,14 @@ public class OI implements Constants, HardwareAdapter {
 		return xbox;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void check(){
+		Command pidTurnTestCommand = new TurnToAngle();
 		xbox.leftBumper.whenPressed(new ShiftUp());
 		xbox.leftBumper.whenReleased(new ShiftDown());
 		xbox.rightBumper.whenPressed(new GearDown());
 		xbox.rightBumper.whenReleased(new GearUp());
+		xbox.start.whenPressed(pidTurnTestCommand);
+		xbox.select.cancelWhenPressed(pidTurnTestCommand);
 		//xbox.start.whenPressed(new TurnToAngle(-45));
 		//xbox.start.whenPressed(new Target());
 		//xbox.select.whenPressed(new TurnToAngle(-3));

@@ -62,7 +62,6 @@ public class Robot extends IterativeRobot implements Constants{
     public static UDPForVision comms;
 	
     Command autoCommand;
-    Command pidCommand;
     SendableChooser<Command> chooser;
 
     /**
@@ -119,6 +118,8 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Encoder Distance", 0.0);
         SmartDashboard.putDouble("Angle Target", 0.0);
         SmartDashboard.putDouble("Distance To Drive To", 0.0);
+		sdb = new SmartDashboardInteractions();
+
         
        oi = new OI();
        
@@ -185,9 +186,7 @@ public class Robot extends IterativeRobot implements Constants{
      */
     public void teleopPeriodic() {
     	gameState = GameState.Teleop;
-    	pidCommand = new TurnToAngle();
-    	if(OI.getXbox().start.get()) pidCommand.start();
-    	if(OI.getXbox().select.get()) pidCommand.cancel();
+    	sdb.update();
     	comms.poke();		
     	sensors.check();
     	Scheduler.getInstance().run();
