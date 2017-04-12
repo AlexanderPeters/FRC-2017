@@ -80,14 +80,16 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	}
 
 	public void driveVelocity(double throttle, double heading) {
-		if (Robot.gameState == Robot.GameState.Teleop) {
+		if (Robot.gameState == Robot.GameState.Teleop || Robot.gameState == Robot.GameState.Autonomous) {
 			driveTrain.arcadeDrive(throttle, heading);
+			//Added println to make tuning pid's faster
+			//System.out.println("Drive Voltage Left, " + leftDriveMaster.getOutputVoltage() + " | Drive Voltage Right, " + rightDriveMaster.getOutputVoltage());			
 		}
 	}
 
 	public void driveStraight(double throttle) {
 		double theta = NavX.getYaw();
-		putGyroErrorToSmartDashboard(NavX.getYaw());
+		putGyroErrorToSmartDashboard(theta);
 		putEncoderErrorToSmartDashboard(0);
 		if (Math.signum(throttle) > 0) {
 			// Make this PID Controlled
@@ -196,7 +198,9 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	private void turnToBigAngleSetPID(double p, double i, double d, double maxV) {
 		bigTurnController.setPID(p, i, d);
-		bigTurnController.setOutputRange(-(maxV - kMinVoltageTurnBigAngle) / 10, (maxV - kMinVoltageTurnBigAngle) / 10);
+		double min = Robot.sdb.getTurningBigMinV();
+		double max = Robot.sdb.getTurningBigMaxV();
+		bigTurnController.setOutputRange(-(max - min) / 10, (max - min) / 10);
 	}
 
 	public boolean turnToBigAngle() {
@@ -218,9 +222,9 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	
 	private void turnToSmallAngleSetPID(double p, double i, double d, double maxV) {
 		smallTurnController.setPID(p, i, d);
-		System.out.println("Maxv" + maxV);
-		smallTurnController.setOutputRange(-(kMaxVoltageTurnSmallAngle-kMinVoltageTurnSmallAngle)/10, (kMaxVoltageTurnSmallAngle-kMinVoltageTurnSmallAngle)/10);
-	}
+		double min = Robot.sdb.getTurningSmallMinV();
+		double max = Robot.sdb.getTurningSmallMaxV();
+		smallTurnController.setOutputRange(-(max - min) / 10, (max - min) / 10);	}
 			
 	public boolean turnToSmallAngle() {
 		if(highGearState)

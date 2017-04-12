@@ -66,7 +66,7 @@ public class UDPForVision implements Constants {
 			System.out.println("Bearing is " + Bearing);
 			System.out.println("Elevation is " + Elevation);
 		} catch (IOException e) {
-			System.out.println("Nothing to recieve from comms.");
+			//System.out.println("Nothing to recieve from comms.");
 		}
 	}
 	

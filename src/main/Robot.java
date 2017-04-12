@@ -99,12 +99,13 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Turning KI Big Angle", turnInPlaceKIBigAngle);
         SmartDashboard.putDouble("Turning KD Big Angle", turnInPlaceKDBigAngle);
         SmartDashboard.putDouble("Turning MaxVoltage Big Angle", kMaxVoltageTurnBigAngle);
+        SmartDashboard.putDouble("Turning MinVoltage Big Angle", kMinVoltageTurnBigAngle);
         
         SmartDashboard.putDouble("Turning KP Small Angle", turnInPlaceKPSmallAngle);
         SmartDashboard.putDouble("Turning KI Small Angle", turnInPlaceKISmallAngle);
         SmartDashboard.putDouble("Turning KD Small Angle", turnInPlaceKDSmallAngle);
-        SmartDashboard.putDouble("Small Angle MaxVoltage", kMaxVoltageTurnSmallAngle);
-        System.out.println("-max" + SmartDashboard.getDouble("Small Angle MaxVoltage"));
+        SmartDashboard.putDouble("Turning MaxVoltage Small Angle", kMaxVoltageTurnSmallAngle);
+        SmartDashboard.putDouble("Turning MinVoltage Small Angle", kMinVoltageTurnSmallAngle);
 
         SmartDashboard.putDouble("Turning Tolerance", kToleranceDegreesDefault);
         SmartDashboard.putInt("Turn In Place Controller Switch Angle", turnInPlaceControllerSwitchAngle);
@@ -188,6 +189,14 @@ public class Robot extends IterativeRobot implements Constants{
     public void teleopPeriodic() {
     	gameState = GameState.Teleop;
     	sdb.update();
+    	if(sdb.haveAnyTurnVarsChanged()) {
+    		dt.TurnToAngle();
+    		System.out.println("Turning PID Vars Changed");
+    	}
+    	if(sdb.haveAnyDistanceVarsChangedS()) {
+    		dt.DriveDistance();
+    		System.out.println("Distance PID Vars Changed");
+    	}
     	comms.poke();		
     	sensors.check();
     	Scheduler.getInstance().run();
