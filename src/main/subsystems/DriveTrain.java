@@ -30,6 +30,8 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	private PIDController distanceController;
 	private double turningPIDTarget;
 	private double turningPIDTolerance;
+	private double distancePIDTarget;
+	private double distancePIDTolerance;
 	
 	public DriveTrain() {
 		setTalonDefaults();
@@ -86,6 +88,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	public void driveStraight(double throttle) {
 		double theta = NavX.getYaw();
 		putGyroErrorToSmartDashboard(NavX.getYaw());
+		putEncoderErrorToSmartDashboard(0);
 		if (Math.signum(throttle) > 0) {
 			// Make this PID Controlled
 			driveTrain.arcadeDrive(helper.handleOverPower(throttle), helper.handleOverPower(theta * straightLineKP));
@@ -98,12 +101,43 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	}
 
-	public void driveDistanceSetPID(double p, double i, double d, double maxV) {
+	public void DriveDistance() {
+		double distance = Robot.sdb.getDistance();
+		DriveDistance(distance);
+	}
+
+	public void DriveDistance(double distance) {//feet
+		double tolerance = Robot.sdb.getDistancetolerance();
+		DriveDistance(distance, tolerance);
+
+	}
+
+	public void DriveDistance(double distance, double tolerance) {// feet, feet
+		double maxV = Robot.sdb.getDistanceMaxV();
+		DriveDistance(distance, tolerance, maxV);
+
+	}
+
+	public void DriveDistance(double distance, double tolerance, double maxV) {
+		double KP = Robot.sdb.getDistanceKP();
+		double KI = Robot.sdb.getDistanceKI();
+		double KD = Robot.sdb.getDistanceKD();
+		DriveDistance(distance, tolerance, maxV, KP, KI, KD);
+
+	}
+
+	public void DriveDistance(double distance, double tolerance, double maxV, double KP, double KI, double KD) {
+		driveDistanceSetPID(KP, KI, KD, maxV);
+		this.distancePIDTarget = distance;
+		this.distancePIDTolerance = tolerance;
+	}
+
+	private void driveDistanceSetPID(double p, double i, double d, double maxV) {
 		distanceController.setPID(p, i, d);
 		distanceController.setOutputRange(-maxV / 10, maxV / 10);
 	}
 
-	public void driveDistance(double distance, double tolerance) {
+	public boolean driveDistance() {
 		if (highGearState)
 			new ShiftDown();
 		setBrakeMode(true);
@@ -111,16 +145,15 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		// setVoltageDefaultsPID();
 
 		distanceController.setInputRange(-20.0, +20.0);
-		distanceController.setAbsoluteTolerance(tolerance);
+		distanceController.setAbsoluteTolerance(distancePIDTolerance);
 		distanceController.setContinuous(true);
 		distanceController.enable();
-		distanceController.setSetpoint(distance);
+		distanceController.setSetpoint(-distancePIDTarget);
 		putGyroErrorToSmartDashboard(NavX.getYaw());
+		putEncoderErrorToSmartDashboard(getDistanceTraveledRight() - distancePIDTarget);
 		// System.out.println("r" + distanceControllerRate);
-		this.driveVelocity(distanceControllerRate, 0.0);// Gyro code in drive
-														// straight I think is
-														// messed up
-
+		this.driveVelocity(distanceControllerRate, 0.0);//Drive Straight Code messed up (Make this cascading pid)
+		return Math.abs(distancePIDTarget - Robot.dt.getDistanceTraveledRight()) <= distancePIDTolerance; 
 	}
 
 	public void TurnToAngle() {
@@ -136,7 +169,9 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	}
 
 	public void TurnToAngle(double heading, double tolerance) {
-		double maxV = Robot.sdb.getTurningMaxV();
+		double maxV;
+		if((Math.abs(heading) > Robot.sdb.switchAngle() ? true : false)) maxV = Robot.sdb.getTurningBigMaxV();
+		else maxV = Robot.sdb.getTurningSmallMaxV();
 		
 		TurnToAngle(heading, tolerance, maxV);
 	}
@@ -159,7 +194,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	}
 
-	public void turnToBigAngleSetPID(double p, double i, double d, double maxV) {
+	private void turnToBigAngleSetPID(double p, double i, double d, double maxV) {
 		bigTurnController.setPID(p, i, d);
 		bigTurnController.setOutputRange(-(maxV - kMinVoltageTurnBigAngle) / 10, (maxV - kMinVoltageTurnBigAngle) / 10);
 	}
@@ -176,13 +211,15 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		bigTurnController.enable();
 		bigTurnController.setSetpoint(turningPIDTarget);
 		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
+		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, bigTurnControllerRate);
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance;
 	}
 	
-	public void turnToSmallAngleSetPID(double p, double i, double d, double maxV) {
+	private void turnToSmallAngleSetPID(double p, double i, double d, double maxV) {
 		smallTurnController.setPID(p, i, d);
-		smallTurnController.setOutputRange(-(maxV-kMinVoltageTurnSmallAngle)/10, (maxV-kMinVoltageTurnSmallAngle)/10);
+		System.out.println("Maxv" + maxV);
+		smallTurnController.setOutputRange(-(kMaxVoltageTurnSmallAngle-kMinVoltageTurnSmallAngle)/10, (kMaxVoltageTurnSmallAngle-kMinVoltageTurnSmallAngle)/10);
 	}
 			
 	public boolean turnToSmallAngle() {
@@ -197,6 +234,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		smallTurnController.enable();
 		smallTurnController.setSetpoint(turningPIDTarget);
 		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
+		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, smallTurnControllerRate);
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance;
 	}

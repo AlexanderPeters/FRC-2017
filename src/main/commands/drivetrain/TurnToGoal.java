@@ -1,17 +1,18 @@
 package main.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import main.Constants;
 import main.Robot;
 
 public class TurnToGoal extends Command implements Constants {
 	private double heading;
+	private boolean bigAngle;
 	private boolean done;
 	protected void initialize() {
 		done = false;
 		heading = Robot.comms.getBearing();
-		Robot.dt.TurnToAngle(heading);
+		bigAngle = (Math.abs(heading) > Robot.sdb.switchAngle() ? true : false);
+		Robot.dt.TurnToAngle(heading); 
     	Robot.dt.resetGyro();
     }
 
@@ -19,8 +20,10 @@ public class TurnToGoal extends Command implements Constants {
     protected void execute() {
     	if(heading >= -180 && heading <= 180) {
     		System.out.println("Turning To" + heading);
-    		/*if(Robot.sdb.isBigAngle())
-    			done = Robot.dt.turnToSmallAngle();*/
+    		if(bigAngle)
+    			done = Robot.dt.turnToBigAngle();
+    		else
+    			done = Robot.dt.turnToSmallAngle();
     	}
     	else {
     		System.out.println("Turn To Target Called With ILLEGAL ANGLE !!!!");

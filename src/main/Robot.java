@@ -103,7 +103,8 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Turning KP Small Angle", turnInPlaceKPSmallAngle);
         SmartDashboard.putDouble("Turning KI Small Angle", turnInPlaceKISmallAngle);
         SmartDashboard.putDouble("Turning KD Small Angle", turnInPlaceKDSmallAngle);
-        SmartDashboard.putDouble("Turning MaxVoltage Small Angle", kMaxVoltageTurnSmallAngle);
+        SmartDashboard.putDouble("Small Angle MaxVoltage", kMaxVoltageTurnSmallAngle);
+        System.out.println("-max" + SmartDashboard.getDouble("Small Angle MaxVoltage"));
 
         SmartDashboard.putDouble("Turning Tolerance", kToleranceDegreesDefault);
         SmartDashboard.putInt("Turn In Place Controller Switch Angle", turnInPlaceControllerSwitchAngle);

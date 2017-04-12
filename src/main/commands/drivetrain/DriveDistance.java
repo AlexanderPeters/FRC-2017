@@ -1,76 +1,40 @@
 package main.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import main.Robot;
 
 public class DriveDistance extends Command {
-
-	private double distance;
-	private double tolerance;
-	private double KP, KI, KD, maxV;
+	private boolean done;
 	
-	//@param distance: the desired distance to go travel (+ or - (forward, backward; respectively)), tolerance: the absolute difference allowable 
-    @SuppressWarnings("deprecation")
-	public DriveDistance(double distance, double tolerance, double maxV) {//feet, feet
-    	requires(Robot.dt);
-    	this.distance = -distance;
-    	this.tolerance = tolerance;
-    	this.maxV = maxV;
-    	this.KP = SmartDashboard.getDouble("Distance KP", 0.0);
-    	this.KI = SmartDashboard.getDouble("Distance KI", 0.0);
-    	this.KD = SmartDashboard.getDouble("Distance KD", 0.0);
-
-    }
-    @SuppressWarnings("deprecation")
-   	public DriveDistance(double distance, double tolerance) {//feet, feet
-       	requires(Robot.dt);
-       	this.distance = -distance;
-       	this.tolerance = tolerance;
-       	this.KP = SmartDashboard.getDouble("Distance KP", 0.0);
-       	this.KI = SmartDashboard.getDouble("Distance KI", 0.0);
-       	this.KD = SmartDashboard.getDouble("Distance KD", 0.0);
-       	this.maxV = SmartDashboard.getDouble("Distance MaxVoltage", 0.0);
-
-    }
-    @SuppressWarnings("deprecation")
-	public DriveDistance(double distance) {//feet
-    	requires(Robot.dt);
-    	this.distance = -distance;
-    	this.KP = SmartDashboard.getDouble("Distance KP", 0.0);
-    	this.KI = SmartDashboard.getDouble("Distance KI", 0.0);
-    	this.KD = SmartDashboard.getDouble("Distance KD", 0.0);
-    	this.tolerance = SmartDashboard.getDouble("Distance Tolerance", 0.0);
-    	this.maxV = SmartDashboard.getDouble("Distance MaxVoltage", 0.0);
-
-    }
-    
-    @SuppressWarnings("deprecation")
-	public DriveDistance() {//feet
-    	requires(Robot.dt);
-    	this.distance = -SmartDashboard.getDouble("Distance To Drive To", 0.0);
-    	this.KP = SmartDashboard.getDouble("Distance KP", 0.0);
-    	this.KI = SmartDashboard.getDouble("Distance KI", 0.0);
-    	this.KD = SmartDashboard.getDouble("Distance KD", 0.0);
-    	this.tolerance = SmartDashboard.getDouble("Distance Tolerance", 0.0);
-    	this.maxV = SmartDashboard.getDouble("Distance MaxVoltage", 0.0);
-
-    }
-
-    // Called just before this Command runs the first time
+	public DriveDistance() {
+		Robot.dt.DriveDistance();
+	}
+	public DriveDistance(double distance) {
+		Robot.dt.DriveDistance(distance);
+	}
+	public DriveDistance(double distance, double tolerance) {
+		Robot.dt.DriveDistance(distance, tolerance);
+	}
+	public DriveDistance(double distance, double tolerance, double maxV) {
+		Robot.dt.DriveDistance(distance, tolerance, maxV);
+	}
+	public DriveDistance(double distance, double tolerance, double maxV, double KP, double KI, double KD) {
+		Robot.dt.DriveDistance(distance, tolerance, maxV, KP, KI, KD);
+	}
+	
+	// Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.dt.driveDistanceSetPID(KP, KI, KD, maxV);
     	Robot.dt.resetSensors();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.dt.driveDistance(distance, tolerance);
+    	done = Robot.dt.driveDistance();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-		return Math.abs(distance - Robot.dt.getDistanceTraveledRight()) <= tolerance; 
+		return done;
     }
 
     // Called once after isFinished returns true

@@ -9,7 +9,6 @@ import main.commands.drivetrain.Drive;
 import main.commands.drivetrain.DriveDistance;
 import main.commands.drivetrain.DrivePercentage;
 import main.commands.drivetrain.Target;
-import main.commands.drivetrain.TimedTurnToAngle;
 import main.commands.drivetrain.TurnToAngle;
 import main.commands.gearmech.GearDown;
 import main.commands.gearmech.GearUp;
@@ -39,13 +38,13 @@ public class OI implements Constants, HardwareAdapter {
 	}
 
 	public void check(){
-		Command pidTurnTestCommand = new TurnToAngle();
+		//Command pidTurnTestCommand = new TurnToAngle();
 		xbox.leftBumper.whenPressed(new ShiftUp());
 		xbox.leftBumper.whenReleased(new ShiftDown());
 		xbox.rightBumper.whenPressed(new GearDown());
 		xbox.rightBumper.whenReleased(new GearUp());
-		xbox.start.whenPressed(pidTurnTestCommand);
-		xbox.select.cancelWhenPressed(pidTurnTestCommand);
+		//xbox.start.whenPressed(pidTurnTestCommand);
+		//xbox.select.cancelWhenPressed(pidTurnTestCommand);
 		//xbox.start.whenPressed(new TurnToAngle(-45));
 		//xbox.start.whenPressed(new Target());
 		//xbox.select.whenPressed(new TurnToAngle(-3));
@@ -74,6 +73,9 @@ public class OI implements Constants, HardwareAdapter {
 		//xbox.rightTrigger.whileHeld(new Stir(stirrerMotorForward));
 		//xbox.rightTrigger.whenReleased(new FlyWheelOff());
 		//xbox.rightTrigger.whenReleased(new Stir(stirrerMotorOff));
+		SmartDashboard.putData("Turn To An Angle", new TurnToAngle());
+		SmartDashboard.putData("Drive A Distance", new DriveDistance());
+
 	}
 }
 
