@@ -8,7 +8,7 @@ import main.Constants;
 public class UDPForVision implements Constants {
 	DatagramSocket serverSocket;
 	byte[] receiveData = new byte[1024];
-	byte[] sendData= new byte[1024];
+	byte[] sendData = new byte[1024];
 	private String[] values;
 	private double Time, CamNum, Range, Bearing, Elevation;
 	private boolean TargetFound = false;
@@ -66,7 +66,7 @@ public class UDPForVision implements Constants {
 			System.out.println("Bearing is " + Bearing);
 			System.out.println("Elevation is " + Elevation);
 		} catch (IOException e) {
-			//System.out.println("Nothing to recieve from comms.");
+			System.out.println("Nothing to recieve from comms.");
 		}
 	}
 	

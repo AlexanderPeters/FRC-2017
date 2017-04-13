@@ -1,7 +1,6 @@
 package main.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.command.TimedCommand;
-import main.OI;
 import main.Robot;
 
 /**
@@ -9,19 +8,19 @@ import main.Robot;
  */
 public class TimedDrive extends TimedCommand {
 	
-	private double speed, bearing;
+	private double throttle, heading;
 	
-	public TimedDrive(double speed, double bearing, double time) {
+	public TimedDrive(double throttle, double heading, double time) {
     	super(time);
-    	this.speed = speed;
-    	this.bearing = bearing;
+    	this.throttle = throttle;
+    	this.heading = heading;
     	requires(Robot.dt);
     }
 	
-    public TimedDrive(double speed, double time) {
+    public TimedDrive(double throttle, double time) {
     	super(time);
-    	this.speed = speed;
-    	this.bearing = 0.0;
+    	this.throttle = throttle;
+    	this.heading = 0.0;
     	requires(Robot.dt);
     }
 
@@ -31,7 +30,11 @@ public class TimedDrive extends TimedCommand {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.dt.driveVelocity(speed, bearing);
+    	if(!Robot.dt.getPIDCanRun())
+    		if(heading == 0.0)
+    			Robot.dt.driveStraight(throttle);
+    		else
+    			Robot.dt.driveVelocity(throttle, heading);
     	//Robot.dt.driveStraight(speed);//OI.getXbox().getSmoothedAltX());
     	//System.out.println(OI.getXbox().getMainX());
     }

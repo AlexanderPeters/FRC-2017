@@ -7,7 +7,7 @@ import main.commands.climber.WinchForward;
 import main.commands.climber.WinchOff;
 import main.commands.drivetrain.Drive;
 import main.commands.drivetrain.DriveDistance;
-import main.commands.drivetrain.DrivePercentage;
+import main.commands.drivetrain.DriveVelocity;
 import main.commands.drivetrain.Target;
 import main.commands.drivetrain.TurnToAngle;
 import main.commands.gearmech.GearDown;
@@ -43,6 +43,8 @@ public class OI implements Constants, HardwareAdapter {
 		xbox.leftBumper.whenReleased(new ShiftDown());
 		xbox.rightBumper.whenPressed(new GearDown());
 		xbox.rightBumper.whenReleased(new GearUp());
+		xbox2.rightBumper.whenPressed(new GearDown());
+		xbox2.rightBumper.whenReleased(new GearUp());
 		//xbox.start.whenPressed(pidTurnTestCommand);
 		//xbox.select.cancelWhenPressed(pidTurnTestCommand);
 		//xbox.start.whenPressed(new TurnToAngle(-45));

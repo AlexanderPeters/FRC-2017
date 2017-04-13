@@ -32,8 +32,7 @@ public interface Constants {
 	public final double headingDeadband = 0.02;
 	
 	//DRIVETRAIN STRAIGHT LINE kp
-	public final double straightLineKP = 0.03; //-
-	public final double straightLineKPReverse = -0.03; //+
+	public final double straightLineTolerance= 0.5;
 		
 	//PID VALUES FOR DRIVETRAIN
 	public final double turnInPlaceKPBigAngle = (isCompRobot?0.55:0.65);
@@ -121,6 +120,7 @@ public interface Constants {
 	 ****************/
 	// JOYSTICKS (USB)
 	public final int Xbox_Port = 0;
+	public final int Xbox2_Port = 1;
 	// DIGITAL IO
 	public final int HasGear_Switch = 0;
 	public final int Intake_Switch = 1;

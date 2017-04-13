@@ -39,10 +39,12 @@ public class TurnToAngle extends Command implements Constants {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(bigAngle) 
-    		done = Robot.dt.turnToBigAngle();
-    	else
-    		done = Robot.dt.turnToSmallAngle();
+    	Robot.dt.setPIDCanRun(true);
+	    if(bigAngle) 
+	    	done = Robot.dt.turnToBigAngle();
+	    else
+	    	done = Robot.dt.turnToSmallAngle();
+    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -52,6 +54,7 @@ public class TurnToAngle extends Command implements Constants {
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.dt.setPIDCanRun(false);
     }
 
     // Called when another command which requires one or more of the same

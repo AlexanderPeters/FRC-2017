@@ -20,6 +20,7 @@ import main.commands.drivetrain.Drive;
 import main.commands.pnuematics.ShiftDown;
 
 public class DriveTrain extends Subsystem implements Constants, HardwareAdapter {
+	//Most of this should be static but, I'm to lazy to fix it.
 	private static boolean highGearState = false;
 	private static AHRS NavX;
 	private DriveHelper helper = new DriveHelper(7.5);
@@ -32,9 +33,11 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	private double turningPIDTolerance;
 	private double distancePIDTarget;
 	private double distancePIDTolerance;
+	private boolean pidCanRun;
 	
 	public DriveTrain() {
 		setTalonDefaults();
+		pidCanRun = false;
 		try {
 	          /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
 	          /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
@@ -81,28 +84,14 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	public void driveVelocity(double throttle, double heading) {
 		if (Robot.gameState == Robot.GameState.Teleop || Robot.gameState == Robot.GameState.Autonomous) {
-			driveTrain.arcadeDrive(throttle, heading);
+			driveTrain.arcadeDrive(helper.handleOverPower(helper.handleDeadband(throttle, throttleDeadband)),
+					helper.handleOverPower(helper.handleDeadband(heading, headingDeadband)));
 			//Added println to make tuning pid's faster
-			//System.out.println("Drive Voltage Left, " + leftDriveMaster.getOutputVoltage() + " | Drive Voltage Right, " + rightDriveMaster.getOutputVoltage());			
+			System.out.println("Drive Voltage Left, " + leftDriveMaster.getOutputVoltage() + " | Drive Voltage Right, " + rightDriveMaster.getOutputVoltage());			
 		}
+		updateRobotState();
 	}
-
-	public void driveStraight(double throttle) {
-		double theta = NavX.getYaw();
-		putGyroErrorToSmartDashboard(theta);
-		putEncoderErrorToSmartDashboard(0);
-		if (Math.signum(throttle) > 0) {
-			// Make this PID Controlled
-			driveTrain.arcadeDrive(helper.handleOverPower(throttle), helper.handleOverPower(theta * straightLineKP));
-		} else {
-			// Might be unnecessary but I think the gyro bearing changes if you
-			// drive backwards
-			driveTrain.arcadeDrive(helper.handleOverPower(throttle),
-					helper.handleOverPower(theta * straightLineKPReverse));
-		}
-
-	}
-
+	
 	public void DriveDistance() {
 		double distance = Robot.sdb.getDistance();
 		DriveDistance(distance);
@@ -154,7 +143,8 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		putGyroErrorToSmartDashboard(NavX.getYaw());
 		putEncoderErrorToSmartDashboard(getDistanceTraveledRight() - distancePIDTarget);
 		// System.out.println("r" + distanceControllerRate);
-		this.driveVelocity(distanceControllerRate, 0.0);//Drive Straight Code messed up (Make this cascading pid)
+		this.driveStraight(distanceControllerRate);//Drive Straight Code messed up (Make this cascading pid)
+		updateRobotState();
 		return Math.abs(distancePIDTarget - Robot.dt.getDistanceTraveledRight()) <= distancePIDTolerance; 
 	}
 
@@ -172,7 +162,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	public void TurnToAngle(double heading, double tolerance) {
 		double maxV;
-		if((Math.abs(heading) > Robot.sdb.switchAngle() ? true : false)) maxV = Robot.sdb.getTurningBigMaxV();
+		if(Math.abs(heading) > Robot.sdb.switchAngle()) maxV = Robot.sdb.getTurningBigMaxV();
 		else maxV = Robot.sdb.getTurningSmallMaxV();
 		
 		TurnToAngle(heading, tolerance, maxV);
@@ -187,7 +177,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	}
 
 	public void TurnToAngle(double heading, double tolerance, double maxV, double KP, double KI, double KD) {
-		if (Robot.sdb.isBigAngle())
+		if (Math.abs(heading) > Robot.sdb.switchAngle())
 			turnToBigAngleSetPID(KP, KI, KD, maxV);
 		else
 			turnToSmallAngleSetPID(KP, KI, KD, maxV);
@@ -199,8 +189,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	private void turnToBigAngleSetPID(double p, double i, double d, double maxV) {
 		bigTurnController.setPID(p, i, d);
 		double min = Robot.sdb.getTurningBigMinV();
-		double max = Robot.sdb.getTurningBigMaxV();
-		bigTurnController.setOutputRange(-(max - min) / 10, (max - min) / 10);
+		bigTurnController.setOutputRange(-(maxV - min) / 10, (maxV - min) / 10);
 	}
 
 	public boolean turnToBigAngle() {
@@ -217,14 +206,15 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
 		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, bigTurnControllerRate);
+		updateRobotState();
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance;
 	}
 	
 	private void turnToSmallAngleSetPID(double p, double i, double d, double maxV) {
 		smallTurnController.setPID(p, i, d);
 		double min = Robot.sdb.getTurningSmallMinV();
-		double max = Robot.sdb.getTurningSmallMaxV();
-		smallTurnController.setOutputRange(-(max - min) / 10, (max - min) / 10);	}
+		smallTurnController.setOutputRange(-(maxV - min) / 10, (maxV - min) / 10);	
+	}
 			
 	public boolean turnToSmallAngle() {
 		if(highGearState)
@@ -240,7 +230,33 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
 		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, smallTurnControllerRate);
+		updateRobotState();
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance;
+	}
+	
+	public void driveStraight(double throttle) {
+		if(highGearState)
+			new ShiftDown();
+		setBrakeMode(true);
+		setCtrlMode(PERCENT_VBUS_MODE);
+				
+		smallTurnController.setInputRange(-180.0f,  180.0f);
+		smallTurnController.setAbsoluteTolerance(straightLineTolerance);
+		smallTurnController.setContinuous(true);
+		smallTurnController.enable();
+		smallTurnController.setSetpoint(0.0);
+		putGyroErrorToSmartDashboard(NavX.getYaw());
+		putEncoderErrorToSmartDashboard(0);
+		this.driveVelocity(helper.handleOverPower(throttle), smallTurnControllerRate);
+		updateRobotState();
+	}
+		
+	public void setPIDCanRun(boolean canRun) {
+		pidCanRun = canRun;
+	}
+	
+	public boolean getPIDCanRun() {
+		return pidCanRun;
 	}
 	
 	public double getDistanceAvg() {
@@ -294,6 +310,13 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	/*******************
 	 * SUPPORT METHODS *
 	 *******************/
+	private void updateRobotState() {
+		if(rightDriveMaster.getOutputVoltage() > -0.1 && rightDriveMaster.getOutputVoltage() < 0.1 
+				&& leftDriveMaster.getOutputVoltage() > -0.1 && leftDriveMaster.getOutputVoltage() < 0.1 
+				&& Robot.robotState != Robot.RobotState.Climbing)	
+			Robot.robotState = Robot.RobotState.Neither;
+	}
+	
 	private void putGyroErrorToSmartDashboard(double num) {
 		SmartDashboard.putDouble("Gyro", num);
 	}

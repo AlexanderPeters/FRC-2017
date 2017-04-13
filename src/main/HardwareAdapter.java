@@ -14,6 +14,7 @@ import lib.joystick.XboxController;
 public interface HardwareAdapter extends Constants {
 	//OI
 	public static XboxController xbox = new XboxController(Xbox_Port);
+	public static XboxController xbox2 = new XboxController(Xbox2_Port);
 	
 	//DriveTrain
 	//Verified for Competition Bot 1 2/13/17

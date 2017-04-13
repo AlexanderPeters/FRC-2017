@@ -6,11 +6,11 @@ import main.Robot;
 /**
  *
  */
-public class DrivePercentage extends Command {
+public class DriveVelocity extends Command {
 	double throttle;
 	double bearing;
 	
-    public DrivePercentage(double throttle, double bearing) {
+    public DriveVelocity(double throttle, double bearing) {
        requires(Robot.dt);
        this.throttle = throttle;
        this.bearing = bearing;
@@ -23,7 +23,8 @@ public class DrivePercentage extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.dt.driveVelocity(throttle, bearing);
+    	if(!Robot.dt.getPIDCanRun())
+    		Robot.dt.driveVelocity(throttle, bearing);
     }
 
     // Make this return true when this Command no longer needs to run execute()
