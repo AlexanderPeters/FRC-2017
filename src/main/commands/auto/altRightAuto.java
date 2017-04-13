@@ -1,6 +1,7 @@
 package main.commands.auto;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import main.Constants;
 import main.commands.drivetrain.DriveDistance;
 import main.commands.drivetrain.TimedDrive;
@@ -9,16 +10,16 @@ import main.commands.gearmech.GearDown;
 import main.commands.gearmech.GearUp;
 
 public class altRightAuto extends CommandGroup implements Constants {
-	/*public altRightAuto() {
-		addSequential(new DriveDistance(4.395, kToleranceDisplacementDefault));
-		addSequential(new DriveDistance(1, kToleranceDisplacementDefault));
-		addSequential(new TurnToAngle(-45, 0.5));//Better turning tolerance
-		addSequential(new DriveDistance(4, kToleranceDisplacementDefault));
-		addSequential(new DriveDistance(1.188, kToleranceDisplacementDefault));
-		//addSequential(new TurnToHeading(0, kToleranceDegreesDefault)); Use if you need to reset and then run DriveDisplacement again
+	public altRightAuto() {
+		addSequential(new GearUp());
+		addSequential(new DriveDistance(-5.0));
+		addSequential(new WaitCommand(0.5));
+		addSequential(new TurnToAngle(-60));
+		addSequential(new WaitCommand(0.5));
+		addSequential(new DriveDistance(-5.8));
 		addSequential(new GearDown());
-		addSequential(new DriveDistance(-2, kToleranceDisplacementDefault));
+		addSequential(new TimedDrive(0.55, 2));
 		addSequential(new GearUp());
 	}
-*/
+
 }

@@ -139,13 +139,13 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		distanceController.setAbsoluteTolerance(distancePIDTolerance);
 		distanceController.setContinuous(true);
 		distanceController.enable();
-		distanceController.setSetpoint(-distancePIDTarget);
+		distanceController.setSetpoint(distancePIDTarget);
 		putGyroErrorToSmartDashboard(NavX.getYaw());
-		putEncoderErrorToSmartDashboard(getDistanceTraveledRight() - distancePIDTarget);
+		putEncoderErrorToSmartDashboard(distancePIDTarget - this.getDistanceTraveledRight());
 		// System.out.println("r" + distanceControllerRate);
-		this.driveStraight(distanceControllerRate);//Drive Straight Code messed up (Make this cascading pid)
+		this.driveVelocity(distanceControllerRate, 0.0);//Drive Straight Code messed up (Make this cascading pid)
 		updateRobotState();
-		return Math.abs(distancePIDTarget - Robot.dt.getDistanceTraveledRight()) <= distancePIDTolerance; 
+		return Math.abs(distancePIDTarget - this.getDistanceTraveledRight()) <= distancePIDTolerance; 
 	}
 
 	public void TurnToAngle() {
@@ -203,7 +203,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		bigTurnController.setContinuous(true);
 		bigTurnController.enable();
 		bigTurnController.setSetpoint(turningPIDTarget);
-		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
+		putGyroErrorToSmartDashboard(turningPIDTarget - NavX.getYaw());
 		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, bigTurnControllerRate);
 		updateRobotState();
@@ -227,7 +227,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		smallTurnController.setContinuous(true);
 		smallTurnController.enable();
 		smallTurnController.setSetpoint(turningPIDTarget);
-		putGyroErrorToSmartDashboard(NavX.getYaw() - turningPIDTarget);
+		putGyroErrorToSmartDashboard(turningPIDTarget - NavX.getYaw());
 		putEncoderErrorToSmartDashboard(0);
 		this.driveVelocity(0.0, smallTurnControllerRate);
 		updateRobotState();

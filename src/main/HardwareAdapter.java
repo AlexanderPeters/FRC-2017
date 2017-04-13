@@ -5,16 +5,18 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import lib.joystick.AdvJoystick;
 import lib.joystick.XboxController;
 
 public interface HardwareAdapter extends Constants {
 	//OI
 	public static XboxController xbox = new XboxController(Xbox_Port);
-	public static XboxController xbox2 = new XboxController(Xbox2_Port);
+	public static AdvJoystick xbox2 = new AdvJoystick(Xbox2_Port);
 	
 	//DriveTrain
 	//Verified for Competition Bot 1 2/13/17

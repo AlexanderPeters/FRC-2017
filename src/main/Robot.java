@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import lib.Looper;
 import lib.UDPForVision;
+import main.commands.auto.altRightAuto;
 import main.commands.auto.centerGearAuto;
 import main.commands.auto.doNothing;
 import main.commands.auto.leftGearAuto;
@@ -88,12 +89,6 @@ public class Robot extends IterativeRobot implements Constants{
        //mEnabledLooper.register(new UDPController());
         //mEnabledLooper.register(new SensorChecker());
     
-		chooser = new SendableChooser<Command>();
-        chooser.addDefault("Do Nothing Auto", new doNothing());
-        chooser.addObject("Left Gear Auto", new leftGearAuto());
-        chooser.addObject("Center Gear Auto", new centerGearAuto());
-        chooser.addObject("Right Gear Auto", new rightGearAuto());
-        SmartDashboard.putData("Auto mode", chooser);
         
         SmartDashboard.putDouble("Turning KP Big Angle", turnInPlaceKPBigAngle);
         SmartDashboard.putDouble("Turning KI Big Angle", turnInPlaceKIBigAngle);
@@ -121,10 +116,15 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Angle Target", 0.0);
         SmartDashboard.putDouble("Distance To Drive To", 0.0);
 		sdb = new SmartDashboardInteractions();
-
-        
-       oi = new OI();
+		        
+		oi = new OI();
        
+		chooser = new SendableChooser<Command>();
+        chooser.addDefault("Do Nothing Auto", new doNothing());
+        chooser.addObject("Left Gear Auto", new leftGearAuto());
+        chooser.addObject("Center Gear Auto", new centerGearAuto());
+        chooser.addObject("Right Gear Auto", new altRightAuto());
+        SmartDashboard.putData("Auto mode", chooser);
 
     }
 	
@@ -166,6 +166,17 @@ public class Robot extends IterativeRobot implements Constants{
      */
     public void autonomousPeriodic() {
     	gameState = GameState.Autonomous;
+    	sdb.update();
+    	if(sdb.haveAnyTurnVarsChanged()) {
+    		dt.TurnToAngle();
+    		System.out.println("Turning PID Vars Changed");
+    	}
+    	if(sdb.haveAnyDistanceVarsChanged()) {
+    		dt.DriveDistance();
+    		System.out.println("Distance PID Vars Changed");
+    	}
+    	comms.poke();		
+    	sensors.check();
         Scheduler.getInstance().run();
     }
     
@@ -193,7 +204,7 @@ public class Robot extends IterativeRobot implements Constants{
     		dt.TurnToAngle();
     		System.out.println("Turning PID Vars Changed");
     	}
-    	if(sdb.haveAnyDistanceVarsChangedS()) {
+    	if(sdb.haveAnyDistanceVarsChanged()) {
     		dt.DriveDistance();
     		System.out.println("Distance PID Vars Changed");
     	}

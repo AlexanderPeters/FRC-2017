@@ -165,7 +165,7 @@ public class SmartDashboardInteractions {
 
 	}
 	
-	public boolean haveAnyDistanceVarsChangedS() {
+	public boolean haveAnyDistanceVarsChanged() {
 		boolean returnBool;
 		update();
 		if(lastDistance != distance ||
