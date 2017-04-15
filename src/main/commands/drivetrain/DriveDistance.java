@@ -76,6 +76,8 @@ public class DriveDistance extends Command {
     // Called once after isFinished returns true
     protected void end() {
     	Robot.dt.setPIDCanRun(false);
+    	Robot.dt.resetPIDControllers();
+    	Robot.dt.resetSensors();
     	count = 0;
     	done = false;
     }

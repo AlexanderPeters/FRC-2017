@@ -109,6 +109,7 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Distance KI", displacementKI);
         SmartDashboard.putDouble("Distance KD", displacementKD);
         SmartDashboard.putDouble("Distance Tolerance", kToleranceDisplacementDefault);
+        SmartDashboard.putDouble("Distance MinVoltage", kMinVoltageDisp);
         SmartDashboard.putDouble("Distance MaxVoltage", kMaxVoltageDisp);
         
         SmartDashboard.putDouble("Gyro", 0.0);

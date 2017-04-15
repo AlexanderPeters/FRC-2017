@@ -75,8 +75,9 @@ public class OI implements Constants, HardwareAdapter {
 		//xbox.rightTrigger.whileHeld(new Stir(stirrerMotorForward));
 		//xbox.rightTrigger.whenReleased(new FlyWheelOff());
 		//xbox.rightTrigger.whenReleased(new Stir(stirrerMotorOff));
-		SmartDashboard.putData("Turn To An Angle", new TurnToAngle(true));
-		SmartDashboard.putData("Drive A Distance", new DriveDistance(true));
+		boolean fineTuning = true;
+		SmartDashboard.putData("Turn To An Angle", new TurnToAngle(!fineTuning));
+		SmartDashboard.putData("Drive A Distance", new DriveDistance(!fineTuning));
 
 	}
 }

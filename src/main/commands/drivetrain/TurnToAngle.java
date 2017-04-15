@@ -76,6 +76,8 @@ public class TurnToAngle extends Command implements Constants {
     // Called once after isFinished returns true
     protected void end() {
     	Robot.dt.setPIDCanRun(false);
+    	Robot.dt.resetPIDControllers();
+    	Robot.dt.resetGyro();
     	count = 0;
     	done = false;
     }

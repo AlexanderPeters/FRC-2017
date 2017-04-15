@@ -7,7 +7,7 @@ import main.Robot;
  *
  */
 public class TimedDrive extends TimedCommand {
-	
+	private int count = 0;
 	private double throttle, heading;
 	
 	public TimedDrive(double throttle, double heading, double time) {
@@ -26,15 +26,19 @@ public class TimedDrive extends TimedCommand {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.dt.resetGyro();
     }           
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	if(count == 0)
+    		Robot.dt.resetGyro();
     	if(!Robot.dt.getPIDCanRun())
     		if(heading == 0.0)
     			Robot.dt.driveStraight(throttle);
     		else
     			Robot.dt.driveVelocity(throttle, heading);
+    	count++;
     	//Robot.dt.driveStraight(speed);//OI.getXbox().getSmoothedAltX());
     	//System.out.println(OI.getXbox().getMainX());
     }
@@ -42,6 +46,9 @@ public class TimedDrive extends TimedCommand {
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.dt.resetPIDControllers();
+    	Robot.dt.resetSensors();
+    	count = 0;
     }
 
     // Called when another command which requires one or more of the same

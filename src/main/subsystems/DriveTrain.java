@@ -33,12 +33,13 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	private double turningPIDTolerance = 0.0;
 	private double distancePIDTarget = 0.0;
 	private double distancePIDTolerance = 0.0;
-	private double lastAngularTime;
-	private double lastAngle;
-	private double lastDistanceTime;
-	private double lastDistance;
+	private double lastAngularTime = 0;
+	private double lastAngle = 0;
+	private double lastDistanceTime = 0;
+	private double lastDistance = 0;
 	private double counter = 1;
 	private boolean pidCanRun;
+	private double smallTurnMinV, bigTurnMinV, distanceMivV;
 	
 	public DriveTrain() {
 		setTalonDefaults();
@@ -55,13 +56,13 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		
 		smallTurnController = new PIDController(turnInPlaceKPSmallAngle, turnInPlaceKISmallAngle, turnInPlaceKDSmallAngle, NavX, new PIDOutput() {
 			public void pidWrite(double d) {
-				smallTurnControllerRate = d + (kMinVoltageTurnSmallAngle*Math.signum(d))/10;
+				smallTurnControllerRate = d;
 			}
 		});
 		
 		bigTurnController = new PIDController(turnInPlaceKPBigAngle, turnInPlaceKIBigAngle, turnInPlaceKDBigAngle, NavX, new PIDOutput() {
 			public void pidWrite(double d) {
-				bigTurnControllerRate = d + (kMinVoltageTurnBigAngle*Math.signum(d))/10;
+				bigTurnControllerRate = d;
 			}
 		});
 		
@@ -69,7 +70,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 			PIDSourceType m_sourceType = PIDSourceType.kDisplacement;
 
 			public double pidGet() {
-				return (Robot.dt.getDistanceTraveledRight());
+				return (Robot.dt.getDistanceAvg());
 			}
 
 			public void setPIDSourceType(PIDSourceType pidSource) {
@@ -89,11 +90,12 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 
 	public void driveVelocity(double throttle, double heading) {
 		if (Robot.gameState == Robot.GameState.Teleop || Robot.gameState == Robot.GameState.Autonomous) {
+			setBrakeMode(true);
 			driveTrain.arcadeDrive(helper.handleOverPower(helper.handleDeadband(throttle, throttleDeadband)),
 					helper.handleOverPower(helper.handleDeadband(heading, headingDeadband)));
 			//Added println to make tuning pid's faster
 			//System.out.println("Drive Voltage Left, " + leftDriveMaster.getOutputVoltage() + " | Drive Voltage Right, " + rightDriveMaster.getOutputVoltage());
-			System.out.println("Turning Setpoint, " + turningPIDTarget + " | DistanceSetpoint, " + distancePIDTarget);
+			//System.out.println("Turning Setpoint, " + turningPIDTarget + " | DistanceSetpoint, " + distancePIDTarget);
 		}
 		updateRobotState();
 	}
@@ -127,25 +129,21 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		driveDistanceSetPID(KP, KI, KD, maxV);
 		this.distancePIDTarget = distance;
 		this.distancePIDTolerance = tolerance;
+		this.distanceMivV = Robot.sdb.getDistanceMinV();
 	}
 
 	private void driveDistanceSetPID(double p, double i, double d, double maxV) {
 		distanceController.setPID(p, i, d);
 		distanceController.setOutputRange(-maxV / 10, maxV / 10);
 	}
-
+	
 	public boolean driveDistance() {
-		double deltaTime;
-		double deltaDistance;
 		double velocity = 1000;
 		if (highGearState)
 			new ShiftDown();
-		setBrakeMode(true);
+		setBrakeMode(false);
 		setCtrlMode(PERCENT_VBUS_MODE);
-		if(counter %2 == 1) {
-			lastDistance = this.getDistanceTraveledRight();
-			lastDistanceTime  = System.currentTimeMillis();
-		}
+		
 		// setVoltageDefaultsPID();
 
 		distanceController.setInputRange(-20.0, +20.0);
@@ -154,15 +152,20 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		distanceController.setSetpoint(distancePIDTarget);
 		distanceController.enable();
 		putGyroErrorToSmartDashboard(NavX.getYaw());
-		putEncoderErrorToSmartDashboard(distancePIDTarget - this.getDistanceTraveledRight());
+		putEncoderErrorToSmartDashboard(distancePIDTarget - this.getDistanceAvg());
 		// System.out.println("r" + distanceControllerRate);
-		this.driveVelocity(distanceControllerRate, 0.0);//Drive Straight Code messed up (Make this cascading pid)
-		if(counter %2 == 0) {
-			deltaTime = (System.currentTimeMillis() - lastDistanceTime)/1000;
-			deltaDistance =  this.getDistanceTraveledRight() - lastDistance;
+		this.driveVelocity(distanceControllerRate + (distanceMivV*Math.signum(distanceControllerRate))/10, 0.0);//Drive Straight Code messed up (Make this cascading pid)
+		if(counter %5 == 0) {
+			double deltaTime = (System.currentTimeMillis() - lastDistanceTime)/1000;
+			double deltaDistance =  this.getDistanceAvg() - lastDistance;
 			velocity = deltaDistance/deltaTime;
+			System.out.println(velocity);
+			lastDistance = this.getDistanceAvg();
+			lastDistanceTime  = System.currentTimeMillis();
 		}
+		
 		updateRobotState();
+		counter++;
 		return Math.abs(distancePIDTarget - this.getDistanceTraveledRight()) <= distancePIDTolerance && velocity < 0.05; 
 	}
 	
@@ -186,9 +189,9 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	}
 
 	public void TurnToAngle(double heading, double tolerance, double maxV) {
-		double KP = Robot.sdb.getTurningKP();
-		double KI = Robot.sdb.getTurningKI();
-		double KD = Robot.sdb.getTurningKD();
+		double KP = Robot.sdb.getTurningKP(Math.abs(heading) > Robot.sdb.switchAngle());
+		double KI = Robot.sdb.getTurningKI(Math.abs(heading) > Robot.sdb.switchAngle());
+		double KD = Robot.sdb.getTurningKD(Math.abs(heading) > Robot.sdb.switchAngle());
 
 		TurnToAngle(heading, tolerance, maxV, KP, KI, KD);
 	}
@@ -200,11 +203,12 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 			turnToSmallAngleSetPID(KP, KI, KD, maxV);
 		this.turningPIDTarget = heading;
 		this.turningPIDTolerance = tolerance;
-
+		this.smallTurnMinV = Robot.sdb.getTurningSmallMinV();
+		this.bigTurnMinV = Robot.sdb.getTurningBigMinV();
 	}
 	
 	public boolean turnToAngle() {
-		boolean bigAngle = (Math.abs(turningPIDTarget) > Robot.sdb.switchAngle() ? true : false);
+		boolean bigAngle = Math.abs(turningPIDTarget) > Robot.sdb.switchAngle();
 		boolean done;
 		if (bigAngle)
 			done = Robot.dt.turnToBigAngle();
@@ -225,7 +229,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		double angVelocity = 1000;
 		if (highGearState) 
 			new ShiftDown();
-		setBrakeMode(true);
+		setBrakeMode(false);
 		setCtrlMode(PERCENT_VBUS_MODE);
 		if(counter %2 == 1) {
 			lastAngle = NavX.getYaw();
@@ -238,13 +242,15 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		bigTurnController.setSetpoint(turningPIDTarget);
 		putGyroErrorToSmartDashboard(turningPIDTarget - NavX.getYaw());
 		putEncoderErrorToSmartDashboard(0);
-		this.driveVelocity(0.0, bigTurnControllerRate);
-		if(counter %2 == 0) {
+		this.driveVelocity(0.0, bigTurnControllerRate + (bigTurnMinV*Math.signum(bigTurnControllerRate))/10);
+		if(counter %6 == 0) {
 			deltaTime = (System.currentTimeMillis() - lastAngularTime);
 			deltaAngle = NavX.getYaw() - lastAngle;
 			angVelocity = deltaAngle/deltaTime;
 		}
+		counter++;
 		updateRobotState();
+		System.out.println(bigTurnController.getP() + " " + bigTurnController.getI() + " " + bigTurnController.getD());
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance && angVelocity < 0.5;
 	}
 	
@@ -260,25 +266,26 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		double angVelocity = 1000;
 		if(highGearState)
 			new ShiftDown();
-		setBrakeMode(true);
+		setBrakeMode(false);
 		setCtrlMode(PERCENT_VBUS_MODE);
 		if(counter %2 == 1) {
 			lastAngle = NavX.getYaw();
 			lastAngularTime  = System.currentTimeMillis();
 		}
-		smallTurnController.setInputRange(-180.0f,  180.0f);
+		smallTurnController.setInputRange(-Robot.sdb.switchAngle(),  Robot.sdb.switchAngle());
 		smallTurnController.setAbsoluteTolerance(turningPIDTolerance);
 		smallTurnController.setContinuous(true);
 		smallTurnController.enable();
 		smallTurnController.setSetpoint(turningPIDTarget);
 		putGyroErrorToSmartDashboard(turningPIDTarget - NavX.getYaw());
 		putEncoderErrorToSmartDashboard(0);
-		this.driveVelocity(0.0, smallTurnControllerRate);
-		if(counter %2 == 0) {
+		this.driveVelocity(0.0, smallTurnControllerRate + (smallTurnMinV*Math.signum(smallTurnControllerRate))/10);
+		if(counter %6 == 0) {
 			deltaTime = (System.currentTimeMillis() - lastAngularTime);
 			deltaAngle = NavX.getYaw() - lastAngle;
 			angVelocity = deltaAngle/deltaTime;
 		}
+		counter++;
 		updateRobotState();
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance && angVelocity < 0.5;
 	}
@@ -286,18 +293,36 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	public void driveStraight(double throttle) {
 		if(highGearState)
 			new ShiftDown();
-		setBrakeMode(true);
+		setBrakeMode(false);
 		setCtrlMode(PERCENT_VBUS_MODE);
 					
-		smallTurnController.setInputRange(-180.0f,  180.0f);
+		smallTurnController.setInputRange(-Robot.sdb.switchAngle(),  Robot.sdb.switchAngle());
 		smallTurnController.setAbsoluteTolerance(straightLineTolerance);
 		smallTurnController.setContinuous(true);
 		smallTurnController.enable();
 		smallTurnController.setSetpoint(0.0);
 		putGyroErrorToSmartDashboard(NavX.getYaw());
 		putEncoderErrorToSmartDashboard(0);
-		this.driveVelocity(helper.handleOverPower(throttle), smallTurnControllerRate);
+		this.driveVelocity(helper.handleOverPower(throttle), smallTurnControllerRate + (smallTurnMinV*Math.signum(smallTurnControllerRate))/10);
 		updateRobotState();
+	}
+	
+	public void resetPIDControllers() {
+		resetDistanceController();
+		resetSmallAngleController();
+		resetBigAngleController();
+	}
+	
+	public void resetDistanceController() {
+		distanceController.reset();
+	}
+	
+	public void resetSmallAngleController() {
+		smallTurnController.reset();
+	}
+	
+	public void resetBigAngleController() {
+		bigTurnController.reset();
 	}
 	
 	public void resetCounter() {
@@ -313,7 +338,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	}
 	
 	public double getDistanceAvg() {
-		return (getDistanceTraveledLeft() + getDistanceTraveledRight())/2;
+		return (-getDistanceTraveledLeft() + getDistanceTraveledRight())/2;
 	}
 	
 	public void changeGearing(){
