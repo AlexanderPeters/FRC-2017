@@ -12,12 +12,14 @@ import main.commands.gearmech.GearUp;
 public class altRightAuto extends CommandGroup implements Constants {
 	public altRightAuto() {
 		addSequential(new GearUp());
-		addSequential(new DriveDistance(-5.0));
+		addSequential(new DriveDistance(-4.9));
 		addSequential(new WaitCommand(0.5));
-		addSequential(new TurnToAngle(-60));
+		addSequential(new TurnToAngle(-46));
 		addSequential(new WaitCommand(0.5));
-		addSequential(new DriveDistance(-5.8));
+		addSequential(new TurnToAngle(0));
+		addSequential(new TimedDrive(-0.65, 4.8));
 		addSequential(new GearDown());
+		addSequential(new WaitCommand(0.5));
 		addSequential(new TimedDrive(0.55, 2));
 		addSequential(new GearUp());
 	}

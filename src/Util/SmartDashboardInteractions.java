@@ -49,7 +49,7 @@ public class SmartDashboardInteractions {
 		this.TKP = SmartDashboard.getDouble((bigAngle ? "Turning KP Big Angle" : "Turning KP Small Angle"), 0.0);
 		this.TKI = SmartDashboard.getDouble((bigAngle ? "Turning KI Big Angle" : "Turning KI Small Angle"), 0.0);
 		this.TKD = SmartDashboard.getDouble((bigAngle ? "Turning KD Big Angle" : "Turning KD Small Angle"), 0.0);
-		this.TSmallMaxV = SmartDashboard.getDouble("Turning MaxVoltage Big Angle", 0.0);
+		this.TSmallMaxV = SmartDashboard.getDouble("Turning MaxVoltage Small Angle", 0.0);
 		this.TSmallMinV = SmartDashboard.getDouble("Turning MinVoltage Small Angle", 0.0);
 		this.TBigMaxV = SmartDashboard.getDouble("Turning MaxVoltage Big Angle", 0.0);
 		this.TBigMinV = SmartDashboard.getDouble("Turning MinVoltage Big Angle", 0.0);

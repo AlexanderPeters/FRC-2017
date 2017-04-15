@@ -125,6 +125,8 @@ public class Robot extends IterativeRobot implements Constants{
         chooser.addObject("Center Gear Auto", new centerGearAuto());
         chooser.addObject("Right Gear Auto", new altRightAuto());
         SmartDashboard.putData("Auto mode", chooser);
+        
+        
 
     }
 	

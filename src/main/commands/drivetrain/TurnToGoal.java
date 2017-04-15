@@ -6,29 +6,23 @@ import main.Robot;
 
 public class TurnToGoal extends Command implements Constants {
 	private double heading;
-	private boolean bigAngle;
 	private boolean done;
+	
 	protected void initialize() {
 		done = false;
 		heading = Robot.comms.getBearing();
-		bigAngle = (Math.abs(heading) > Robot.sdb.switchAngle() ? true : false);
-		Robot.dt.TurnToAngle(heading); 
+		if(heading >= -180 && heading <= 180) Robot.dt.TurnToAngle(heading); 
+		else {
+    		System.out.println("Turn To Target Called With ILLEGAL ANGLE !!!!");
+    		done = true;
+		}
+			
     	Robot.dt.resetGyro();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(heading >= -180 && heading <= 180) {
-    		System.out.println("Turning To" + heading);
-    		if(bigAngle)
-    			done = Robot.dt.turnToBigAngle();
-    		else
-    			done = Robot.dt.turnToSmallAngle();
-    	}
-    	else {
-    		System.out.println("Turn To Target Called With ILLEGAL ANGLE !!!!");
-    		done = true;
-    	}
+    	done = Robot.dt.turnToAngle();    
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -43,6 +37,7 @@ public class TurnToGoal extends Command implements Constants {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	end();
     }
 
 }
