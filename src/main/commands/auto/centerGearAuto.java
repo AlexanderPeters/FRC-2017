@@ -9,6 +9,7 @@ import main.commands.gearmech.GearUp;
 
 public class centerGearAuto extends CommandGroup implements Constants {
 	public centerGearAuto() {
+		addSequential(new GearUp());
 		addSequential(new TimedDrive(-0.5, 4.85));
 		addSequential(new GearDown());
 		addSequential(new WaitCommand(1));

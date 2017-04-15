@@ -6,10 +6,14 @@ import main.Robot;
 
 public class TurnToGoal extends Command implements Constants {
 	private double heading;
-	private boolean done;
+	private int count = 0;
+	private boolean done = false;
+
+	TurnToGoal() {
+		Robot.dt.resetGyro();
+	}
 	
 	protected void initialize() {
-		done = false;
 		heading = Robot.comms.getBearing();
 		if(heading >= -180 && heading <= 180) Robot.dt.TurnToAngle(heading); 
 		else {
@@ -22,7 +26,13 @@ public class TurnToGoal extends Command implements Constants {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	done = Robot.dt.turnToAngle();    
+    	if(count == 0) {
+    		Robot.dt.resetGyro();
+    		Robot.dt.resetCounter();
+    	}
+    	Robot.dt.setPIDCanRun(true);
+    	done = Robot.dt.turnToAngle();
+    	count++;
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -32,6 +42,11 @@ public class TurnToGoal extends Command implements Constants {
 
     // Called once after isFinished returns true
     protected void end() {
+    	Robot.dt.setPIDCanRun(false);
+    	Robot.dt.resetPIDControllers();
+    	Robot.dt.resetGyro();
+    	count = 0;
+    	done = false;
     }
 
     // Called when another command which requires one or more of the same

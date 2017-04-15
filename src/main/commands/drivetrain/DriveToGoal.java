@@ -5,27 +5,38 @@ import main.Constants;
 import main.Robot;
 
 public class DriveToGoal extends Command implements Constants {
-	private boolean done;
 	private double distance;
+	private int count = 0;
+	private boolean done = false;
+	
+	public DriveToGoal() {
+		Robot.dt.resetSensors();
+	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		done = false;
 		double range = Robot.comms.getRange();
-		if(range >= 0) distance = ((range*Math.cos(cameraAngle * Math.PI/180)) - desiredDistanceToGoal);
+		if(range >= 0) {
+			distance = ((range*Math.cos(cameraAngle * Math.PI/180)) - desiredDistanceToGoal);
+			Robot.dt.DriveDistance(distance);
+		}
 		else {
 			System.out.println("Drive To Target Called With ILLEGAL RANGE !!!!");
 			done = true;
 		}
-
-		Robot.dt.DriveDistance(distance);
+		
 		Robot.dt.resetSensors();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		System.out.println("Driving To" + distance);
-		done = Robot.dt.driveDistance();
+		if(count == 0) {
+    		Robot.dt.resetSensors();
+    		Robot.dt.resetCounter();
+    	}
+    	Robot.dt.setPIDCanRun(true);
+    	done = Robot.dt.driveDistance();
+    	count++;
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
@@ -35,13 +46,17 @@ public class DriveToGoal extends Command implements Constants {
 
 	// Called once after isFinished returns true
 	protected void end() {
-
+		Robot.dt.setPIDCanRun(false);
+    	Robot.dt.resetPIDControllers();
+    	Robot.dt.resetSensors();
+    	count = 0;
+    	done = false;
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-
+		end();
 	}
 
 }

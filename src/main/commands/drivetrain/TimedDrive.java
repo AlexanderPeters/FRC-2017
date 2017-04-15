@@ -35,7 +35,7 @@ public class TimedDrive extends TimedCommand {
     		Robot.dt.resetGyro();
     	if(!Robot.dt.getPIDCanRun())
     		if(heading == 0.0)
-    			Robot.dt.driveStraight(throttle);
+    			Robot.dt.driveVelocity(throttle, 0.0);//Need to make gyro corrections actaully work
     		else
     			Robot.dt.driveVelocity(throttle, heading);
     	count++;
