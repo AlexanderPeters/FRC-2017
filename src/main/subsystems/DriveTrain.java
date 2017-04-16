@@ -289,6 +289,23 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		updateRobotState();
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance && angVelocity < 0.5;
 	}
+	
+	public boolean turnToAngleBangBang(double target, double tolerance) {
+		if(highGearState)
+			new ShiftDown();
+		setBrakeMode(false);
+		double error = target - NavX.getYaw();
+		double percentError = (error/target) * 100;
+		
+		if(percentError > 50)
+			this.driveVelocity(0.0, Math.signum(error));
+		else if(percentError > 33)
+			this.driveVelocity(0.0, Math.signum(error) * 0.5);
+		else
+			this.driveVelocity(0.0, Math.signum(error) * 0.33);
+		return Math.abs(error) <= tolerance;
+		
+	}
 			
 	public void driveStraight(double throttle) {
 		if(highGearState)
