@@ -14,11 +14,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import lib.Looper;
 import lib.UDPForVision;
+import main.commands.auto.altLeftAuto;
 import main.commands.auto.altRightAuto;
-import main.commands.auto.centerGearAuto;
+import main.commands.auto.centerGearAutoBlueAlliance;
+import main.commands.auto.centerGearAutoRedAlliance;
 import main.commands.auto.doNothing;
 import main.commands.auto.leftGearAuto;
 import main.commands.auto.rightGearAuto;
+import main.commands.auto.shootingAutoBlueAlliance;
+import main.commands.auto.shootingAutoRedAlliance;
 import main.commands.drivetrain.DriveDistance;
 import main.commands.drivetrain.TurnToAngle;
 import main.subsystems.Climber;
@@ -122,9 +126,12 @@ public class Robot extends IterativeRobot implements Constants{
        
 		chooser = new SendableChooser<Command>();
         chooser.addDefault("Do Nothing Auto", new doNothing());
-        chooser.addObject("Left Gear Auto", new leftGearAuto());
-        chooser.addObject("Center Gear Auto", new centerGearAuto());
+        chooser.addObject("Left Gear Auto", new altLeftAuto());
         chooser.addObject("Right Gear Auto", new altRightAuto());
+        chooser.addObject("Blue Alliance Center Gear", new centerGearAutoBlueAlliance());
+        chooser.addObject("Red Alliance Center Gear", new centerGearAutoRedAlliance());
+        chooser.addObject("Blue Alliance Shooting", new shootingAutoBlueAlliance());
+        chooser.addObject("Red Alliance Shooting", new shootingAutoRedAlliance());
         SmartDashboard.putData("Auto mode", chooser);
         
         

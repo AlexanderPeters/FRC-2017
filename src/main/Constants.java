@@ -23,7 +23,7 @@ public interface Constants {
 	public final double stirrerMotorOff = 0.0;
 	public final double driveThrottle = 1.0;
 	public final double turnThrottle = 1.0;
-	public final double shooterForward = 0.8;
+	public final double shooterForward = 0.85;
 	public final double shooterReverse = -1;
 	public final double shooterOff = 0.0;
 	
@@ -35,10 +35,10 @@ public interface Constants {
 	public final double straightLineTolerance= 0.25f;
 		
 	//PID VALUES FOR DRIVETRAIN
-	public final double turnInPlaceKPBigAngle = 0.07;
-	public final double turnInPlaceKIBigAngle = 0.008;
-	public final double turnInPlaceKDBigAngle = 0.15;
-	public final double kMaxVoltageTurnBigAngle = 9.0;
+	public final double turnInPlaceKPBigAngle = 0.039;
+	public final double turnInPlaceKIBigAngle = 3.5E-4;
+	public final double turnInPlaceKDBigAngle = 0.091;
+	public final double kMaxVoltageTurnBigAngle = 9.5;
 	public final double kMinVoltageTurnBigAngle = 3.3;
 	
 	public final double turnInPlaceKPSmallAngle = 0.049;
@@ -47,14 +47,14 @@ public interface Constants {
 	public final double kMaxVoltageTurnSmallAngle = 9.0;
 	public final double kMinVoltageTurnSmallAngle = 0.0;
 	
-	public final double kToleranceDegreesDefault = 1.0f;
+	public final double kToleranceDegreesDefault = 3.0f;
 	public final int turnInPlaceControllerSwitchAngle = 30;
 	
-	public final double displacementKP = 0.85;//Need to tune (turned way the heck down for testing tommorrow 2/25/17)
-	public final double displacementKI = 0.065;
-	public final double displacementKD = 2.0;
-	public final double kToleranceDisplacementDefault = 0.042;//Subject to change #DAMN STRAIGHT!!!!!
-	public final double kMinVoltageDisp = 0.0;
+	public final double displacementKP = 0.4;//Need to tune (turned way the heck down for testing tommorrow 2/25/17)
+	public final double displacementKI = 0.0;
+	public final double displacementKD = 0.45;
+	public final double kToleranceDisplacementDefault = 0.084;//Subject to change #DAMN STRAIGHT!!!!!
+	public final double kMinVoltageDisp = 3.0;
 	public final double kMaxVoltageDisp = 7.0;
 	
 	public final double distanceBetweenRobotAndGearPeg = (double) 1/6;//2 inches in feet
