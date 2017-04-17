@@ -15,7 +15,9 @@ public class shootingAutoBlueAlliance extends CommandGroup implements Constants 
 		addSequential(new StirForTime(stirrerMotorForward, 5));
 		addSequential(new TimedDrive(-0.5, kMinVoltageTurnBigAngle, 1.1));
 		//addSequential(new TurnToAngle(52));//Assuming a real drift of 20 deg calculated was 47.7
-		addSequential(new TimedDrive(-0.5, 5)); 
+		//addSequential(new TimedDrive(-0.5, 5)); 
+		addSequential(new TimedDrive(-0.75, 2.6));
+
 
 	}
 

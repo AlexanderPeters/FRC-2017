@@ -17,7 +17,8 @@ public class centerGearAutoRedAlliance extends CommandGroup implements Constants
 		addSequential(new WaitCommand(0.35));//0.35
 		addSequential(new GearDown());
 		addSequential(new WaitCommand(0.5));//0.5
-		addSequential(new TimedDrive(0.75, 0.78));
+		addParallel(new TimedDrive(0.75, 0.78));
+		addSequential(new FlyWheelForTime(1.0, 6.5));
 		addSequential(new GearUp());
 		addSequential(new TimedDrive(0.0, kMinVoltageTurnBigAngle, 0.74));
 		//addSequential(new TurnToAngle(102));
@@ -25,8 +26,7 @@ public class centerGearAutoRedAlliance extends CommandGroup implements Constants
 		addSequential(new TimedDrive(-0.5, kMinVoltageTurnBigAngle, 0.9));
 		addSequential(new TimedDrive(-0.5, 2.6));*/
 		//addSequential(new WaitCommand(0.35));
-		addParallel(new FlyWheelForTime(1.0, 6));
-		addSequential(new WaitCommand(0.4));
+		addSequential(new WaitCommand(0.26));
 		addSequential(new StirForTime(stirrerMotorForward, 5.5));
 	}
 

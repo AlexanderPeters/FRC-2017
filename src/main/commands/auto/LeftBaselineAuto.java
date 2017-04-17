@@ -7,7 +7,7 @@ import main.commands.gearmech.GearUp;
 public class LeftBaselineAuto extends CommandGroup implements Constants {
 	public LeftBaselineAuto() {
 		addSequential(new GearUp());
-		addSequential(new TimedDrive(-0.75, 1.285));
+		addSequential(new TimedDrive(-0.75, 2.6));
 	}
 
 }

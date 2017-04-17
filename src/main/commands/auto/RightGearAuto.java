@@ -23,6 +23,11 @@ public class RightGearAuto extends CommandGroup implements Constants {
 		addSequential(new WaitCommand(0.5));
 		addSequential(new TimedDrive(0.75, 1));
 		addSequential(new GearUp());
+		addSequential(new TurnToAngle(57));
+		addSequential(new TimedDrive(-0.75, 2.6));
+s		addSequential(new TimedDrive(0.0, -0.4, 0.5));
+		addSequential(new TimedDrive(-0.65, 2));
+		addSequential(new TimedDrive(0.0, 0.4, 0.5));
 		//addSequential(new TimedDrive(0.0, kMinVoltageTurnBigAngle/10, 0.5));
 		//addSequential(new TimedDrive(-0.75, 2.0));
 	}

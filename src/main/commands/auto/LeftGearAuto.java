@@ -14,7 +14,7 @@ public class LeftGearAuto extends CommandGroup implements Constants{
 		addSequential(new GearUp());
 		addSequential(new DriveDistance(-5.88));
 		addSequential(new WaitCommand(0.25));
-		addSequential(new TurnToAngle(63));
+		addSequential(new TurnToAngle(57));
 		addSequential(new WaitCommand(0.5));
 		addSequential(new TimedDrive(-0.75, 1.25));
 		addSequential(new TimedDrive(-0.35, 0.5));
@@ -23,8 +23,9 @@ public class LeftGearAuto extends CommandGroup implements Constants{
 		addSequential(new WaitCommand(0.5));
 		addSequential(new TimedDrive(0.75, 1));
 		addSequential(new GearUp());
-		addSequential(new TurnToAngle(-30));
-		addSequential(new TimedDrive(-0.75, 2.0));
+		addSequential(new TurnToAngle(-57));
+		addSequential(new TimedDrive(-0.75, 2.6));
+		s
 	}
 
 }
