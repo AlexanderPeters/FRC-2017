@@ -14,12 +14,15 @@ public class shootingWithDriveToNZBlue extends CommandGroup implements Constants
 		addParallel(new FlyWheelForTime(shooterForward, 6));
 		addSequential(new WaitCommand(1));
 		addSequential(new StirForTime(stirrerMotorForward, 5));
-		addSequential(new TimedDrive(-0.5, kMinVoltageTurnBigAngle, 1.1));
-		//addSequential(new TurnToAngle(52));//Assuming a real drift of 20 deg calculated was 47.7
-		//addSequential(new TimedDrive(-0.5, 5)); 
+		addSequential(new TimedDrive(-0.5, -kMinVoltageTurnBigAngle, 0.65));
+		//addSequential(new TurnToAngle(-52));//Assuming a real drift of 20 deg calculated was 47.7
+		//addSequential(new TimedDrive(-0.5, 5));
+		addSequential(new TimedDrive(-0.65, 2));
+		addSequential(new TimedTurnToAngleBangBang(45, kToleranceDegreesDefault, 1.1));
 		addSequential(new TimedDrive(-0.75, 2.2));
-		addSequential(new TimedTurnToAngleBangBang(15, kToleranceDegreesDefault, 2));
-		addSequential(new TimedDrive(-0.75, 2.6));
+		addSequential(new TimedTurnToAngleBangBang(45, kToleranceDegreesDefault, 1.1));
+		addSequential(new TimedDrive(-0.75, 4.0));
+		addSequential(new TimedTurnToAngleBangBang(-45, kToleranceDegreesDefault, 2));
 
 
 	}

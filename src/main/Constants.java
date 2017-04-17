@@ -23,7 +23,7 @@ public interface Constants {
 	public final double stirrerMotorOff = 0.0;
 	public final double driveThrottle = 1.0;
 	public final double turnThrottle = 1.0;
-	public final double shooterForward = 0.85;
+	public final double shooterForward = 0.80;
 	public final double shooterReverse = -1;
 	public final double shooterOff = 0.0;
 	
@@ -47,7 +47,7 @@ public interface Constants {
 	public final double kMaxVoltageTurnSmallAngle = 9.0;
 	public final double kMinVoltageTurnSmallAngle = 0.0;
 	
-	public final double kToleranceDegreesDefault = 3.0f;
+	public final double kToleranceDegreesDefault = 1.0f;
 	public final int turnInPlaceControllerSwitchAngle = 30;
 	
 	public final double displacementKP = 0.4;//Need to tune (turned way the heck down for testing tommorrow 2/25/17)

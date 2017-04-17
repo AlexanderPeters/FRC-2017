@@ -133,6 +133,8 @@ public class Robot extends IterativeRobot implements Constants{
         chooser.addObject("Center Gear With Drive To NZ (Blue)", new centerWithDriveToNZBlue());
         chooser.addObject("Center Gear With Drive To NZ (Red)", new centerWithDriveToNZRed());
         
+        //chooser.addObject("Right Gear With Drive To NZ", new RightGearWithDriveToNZ());
+        
         chooser.addObject("Blue Alliance Shooting", new shootingWithDriveToNZBlue());
         chooser.addObject("Red Alliance Shooting", new shootingWithDriveToNZRed());
         SmartDashboard.putData("Auto mode", chooser);

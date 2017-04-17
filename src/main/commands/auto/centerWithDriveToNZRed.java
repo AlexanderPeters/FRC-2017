@@ -16,9 +16,9 @@ public class centerWithDriveToNZRed extends CommandGroup implements Constants {
 		addSequential(new GearDown());
 		addSequential(new WaitCommand(0.5));//0.5
 		addSequential(new TimedDrive(0.75, 0.78));
-		addSequential(new TimedTurnToAngleBangBang(-90, kToleranceDegreesDefault, 2));
-		addSequential(new TimedDrive(-0.75, 1));
-		addSequential(new TimedTurnToAngleBangBang(90, kToleranceDegreesDefault, 2));
-		addSequential(new TimedDrive(-0.75, 3));
+		addSequential(new TimedTurnToAngleBangBang(-92, kToleranceDegreesDefault, 1.1));
+		addSequential(new TimedDrive(-0.75, 1.85));
+		addSequential(new TimedTurnToAngleBangBang(94, kToleranceDegreesDefault, 1.1));
+		addSequential(new TimedDrive(-0.75, 5.2));
 	}
 }

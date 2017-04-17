@@ -10,10 +10,6 @@ import main.commands.gearmech.GearUp;
 public class leftBaseline extends CommandGroup implements Constants {
 	public leftBaseline() {
 		addSequential(new GearUp());
-		addSequential(new TimedDrive(-0.75, 1.285));
-		addSequential(new WaitCommand(0.35));//0.35
-		addSequential(new TimedDrive(0.75, 0.78));
-		addSequential(new TurnToAngleBangBang(57, kToleranceDegreesDefault));
+		addSequential(new TimedDrive(-0.75, 5.0));
 	}
-
 }

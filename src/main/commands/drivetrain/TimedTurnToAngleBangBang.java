@@ -27,12 +27,7 @@ public class TimedTurnToAngleBangBang extends TimedCommand implements Constants 
     	done = Robot.dt.turnToAngleBangBang(heading, tolerance);
     }
 
-    // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() {
-       	return done;
-    }
-
-    // Called once after isFinished returns true
+   // Called once after isFinished returns true
     protected void end() {
     	Robot.dt.setPIDCanRun(false);
     	Robot.dt.resetGyro();
