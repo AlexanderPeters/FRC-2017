@@ -2,9 +2,7 @@ package main;
 
 import java.io.IOException;
 import java.net.SocketException;
-
 import Util.SmartDashboardInteractions;
-import controllers.SensorChecker;
 import controllers.UDPController;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -12,21 +10,19 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import lib.Looper;
 import lib.UDPForVision;
-import main.commands.auto.LeftBaselineAuto;
-import main.commands.auto.LeftGearAuto;
-import main.commands.auto.RightBaselineAuto;
-import main.commands.auto.RightGearAuto;
-import main.commands.auto.centerGearAutoBlueAlliance;
-import main.commands.auto.centerGearAutoRedAlliance;
+import main.commands.auto.LeftGearWithDriveToNZ;
+import main.commands.auto.RightGearWithDriveToNZ;
+import main.commands.auto.centerGearOnly;
+import main.commands.auto.centerGearWithShootBlue;
+import main.commands.auto.centerGearWithShootRed;
+import main.commands.auto.centerWithDriveToNZBlue;
+import main.commands.auto.centerWithDriveToNZRed;
 import main.commands.auto.doNothing;
-import main.commands.auto.leftGearAuto;
-import main.commands.auto.rightGearAuto;
-import main.commands.auto.shootingAutoBlueAlliance;
-import main.commands.auto.shootingAutoRedAlliance;
-import main.commands.drivetrain.DriveDistance;
-import main.commands.drivetrain.TurnToAngle;
+import main.commands.auto.leftBaseline;
+import main.commands.auto.rightBaseline;
+import main.commands.auto.shootingWithDriveToNZBlue;
+import main.commands.auto.shootingWithDriveToNZRed;
 import main.subsystems.Climber;
 import main.subsystems.DriveCamera;
 import main.subsystems.DriveTrain;
@@ -128,14 +124,17 @@ public class Robot extends IterativeRobot implements Constants{
        
 		chooser = new SendableChooser<Command>();
         chooser.addDefault("Do Nothing Auto", new doNothing());
-        chooser.addObject("Left Baseline Auto", new LeftBaselineAuto());
-        chooser.addObject("Right Baseline Auto", new RightBaselineAuto());
-        chooser.addObject("Left Gear Auto", new LeftGearAuto());
-        chooser.addObject("Right Gear Auto", new RightGearAuto());
-        chooser.addObject("Blue Alliance Center Gear", new centerGearAutoBlueAlliance());
-        chooser.addObject("Red Alliance Center Gear", new centerGearAutoRedAlliance());
-        chooser.addObject("Blue Alliance Shooting", new shootingAutoBlueAlliance());
-        chooser.addObject("Red Alliance Shooting", new shootingAutoRedAlliance());
+        chooser.addObject("Left Baseline Auto", new leftBaseline());
+        chooser.addObject("Right Baseline Auto", new rightBaseline());
+        
+        chooser.addObject("Center Gear Only", new centerGearOnly());
+        chooser.addObject("Center Gear With Shooting (Blue)", new centerGearWithShootBlue());
+        chooser.addObject("Center Gear With Shooting (Red)", new centerGearWithShootRed());
+        chooser.addObject("Center Gear With Drive To NZ (Blue)", new centerWithDriveToNZBlue());
+        chooser.addObject("Center Gear With Drive To NZ (Red)", new centerWithDriveToNZRed());
+        
+        chooser.addObject("Blue Alliance Shooting", new shootingWithDriveToNZBlue());
+        chooser.addObject("Red Alliance Shooting", new shootingWithDriveToNZRed());
         SmartDashboard.putData("Auto mode", chooser);
         
         

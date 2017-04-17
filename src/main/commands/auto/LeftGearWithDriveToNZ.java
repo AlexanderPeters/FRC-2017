@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 import main.Constants;
 import main.commands.drivetrain.DriveDistance;
 import main.commands.drivetrain.TimedDrive;
+import main.commands.drivetrain.TimedTurnToAngleBangBang;
 import main.commands.drivetrain.TurnToAngle;
 import main.commands.gearmech.GearDown;
 import main.commands.gearmech.GearUp;
 
-public class LeftGearAuto extends CommandGroup implements Constants{
-	public LeftGearAuto() {
+public class LeftGearWithDriveToNZ extends CommandGroup implements Constants{
+	public LeftGearWithDriveToNZ() {
 		addSequential(new GearUp());
 		addSequential(new DriveDistance(-5.88));
 		addSequential(new WaitCommand(0.25));
@@ -23,9 +24,9 @@ public class LeftGearAuto extends CommandGroup implements Constants{
 		addSequential(new WaitCommand(0.5));
 		addSequential(new TimedDrive(0.75, 1));
 		addSequential(new GearUp());
-		addSequential(new TurnToAngle(-57));
+		addSequential(new TimedTurnToAngleBangBang(-57, kToleranceDegreesDefault, 2));
 		addSequential(new TimedDrive(-0.75, 2.6));
-		s
+		
 	}
 
 }
