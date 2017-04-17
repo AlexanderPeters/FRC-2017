@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import lib.Looper;
 import lib.UDPForVision;
-import main.commands.auto.altLeftAuto;
-import main.commands.auto.altRightAuto;
+import main.commands.auto.LeftBaselineAuto;
+import main.commands.auto.LeftGearAuto;
+import main.commands.auto.RightBaselineAuto;
+import main.commands.auto.RightGearAuto;
 import main.commands.auto.centerGearAutoBlueAlliance;
 import main.commands.auto.centerGearAutoRedAlliance;
 import main.commands.auto.doNothing;
@@ -126,8 +128,10 @@ public class Robot extends IterativeRobot implements Constants{
        
 		chooser = new SendableChooser<Command>();
         chooser.addDefault("Do Nothing Auto", new doNothing());
-        chooser.addObject("Left Gear Auto", new altLeftAuto());
-        chooser.addObject("Right Gear Auto", new altRightAuto());
+        chooser.addObject("Left Baseline Auto", new LeftBaselineAuto());
+        chooser.addObject("Right Baseline Auto", new RightBaselineAuto());
+        chooser.addObject("Left Gear Auto", new LeftGearAuto());
+        chooser.addObject("Right Gear Auto", new RightGearAuto());
         chooser.addObject("Blue Alliance Center Gear", new centerGearAutoBlueAlliance());
         chooser.addObject("Red Alliance Center Gear", new centerGearAutoRedAlliance());
         chooser.addObject("Blue Alliance Shooting", new shootingAutoBlueAlliance());

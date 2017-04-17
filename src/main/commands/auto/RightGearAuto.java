@@ -9,8 +9,8 @@ import main.commands.drivetrain.TurnToAngle;
 import main.commands.gearmech.GearDown;
 import main.commands.gearmech.GearUp;
 
-public class altRightAuto extends CommandGroup implements Constants {
-	public altRightAuto() {
+public class RightGearAuto extends CommandGroup implements Constants {
+	public RightGearAuto() {
 		addSequential(new GearUp());
 		addSequential(new DriveDistance(-5.88));
 		addSequential(new WaitCommand(0.25));
