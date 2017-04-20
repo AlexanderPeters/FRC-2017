@@ -91,8 +91,7 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 	public void driveVelocity(double throttle, double heading) {
 		if (Robot.gameState == Robot.GameState.Teleop || Robot.gameState == Robot.GameState.Autonomous) {
 			setBrakeMode(true);
-			driveTrain.arcadeDrive(helper.handleOverPower(helper.handleDeadband(throttle, throttleDeadband)),
-					helper.handleOverPower(helper.handleDeadband(heading, headingDeadband)));
+			driveTrain.arcadeDrive(helper.handleOverPower(throttle), helper.handleOverPower(heading));
 			//Added println to make tuning pid's faster
 			//System.out.println("Drive Voltage Left, " + leftDriveMaster.getOutputVoltage() + " | Drive Voltage Right, " + rightDriveMaster.getOutputVoltage());
 			//System.out.println("Turning Setpoint, " + turningPIDTarget + " | DistanceSetpoint, " + distancePIDTarget);
@@ -289,6 +288,14 @@ public class DriveTrain extends Subsystem implements Constants, HardwareAdapter 
 		updateRobotState();
 		return Math.abs(turningPIDTarget - Robot.dt.getGyro().getYaw()) <= turningPIDTolerance && angVelocity < 0.5;
 	}
+	
+	/*public boolean turnToAngleBangBang(double target, double tolerance) {
+		double error = (target - NavX.getYaw())/180;
+		double sign = Math.signum(error);
+		double calcV = (otherMinVoltage*sign + (-Math.pow(Math.E, (1.85/Math.E + (1-Math.abs(error)))) + 2)*sign);
+		this.driveVelocity(0.0, calcV/12);
+		return Math.abs(target - NavX.getYaw()) <= tolerance;
+	}*/
 	
 	public boolean turnToAngleBangBang(double target, double tolerance) {
 		if(highGearState)

@@ -47,10 +47,12 @@ public interface Constants {
 	public final double kMaxVoltageTurnSmallAngle = 9.0;
 	public final double kMinVoltageTurnSmallAngle = 0.0;
 	
+	public final double otherMinVoltage = 0.0;
+	
 	public final double kToleranceDegreesDefault = 1.0f;
 	public final int turnInPlaceControllerSwitchAngle = 30;
 	
-	public final double displacementKP = 0.4;//Need to tune (turned way the heck down for testing tommorrow 2/25/17)
+	public final double displacementKP = 0.4;
 	public final double displacementKI = 0.0;
 	public final double displacementKD = 0.45;
 	public final double kToleranceDisplacementDefault = 0.084;//Subject to change #DAMN STRAIGHT!!!!!

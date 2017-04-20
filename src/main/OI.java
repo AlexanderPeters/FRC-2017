@@ -9,6 +9,7 @@ import main.commands.drivetrain.Drive;
 import main.commands.drivetrain.DriveDistance;
 import main.commands.drivetrain.DriveVelocity;
 import main.commands.drivetrain.Target;
+import main.commands.drivetrain.TestMinV;
 import main.commands.drivetrain.TurnToAngle;
 import main.commands.gearmech.GearDown;
 import main.commands.gearmech.GearUp;
@@ -78,6 +79,7 @@ public class OI implements Constants, HardwareAdapter {
 		boolean fineTuning = true;
 		SmartDashboard.putData("Turn To An Angle", new TurnToAngle(!fineTuning));
 		SmartDashboard.putData("Drive A Distance", new DriveDistance(!fineTuning));
+		SmartDashboard.putData("Test BangBang MinV", new TestMinV());
 
 	}
 }

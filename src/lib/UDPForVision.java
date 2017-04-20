@@ -8,9 +8,9 @@ import main.Constants;
 public class UDPForVision implements Constants {
 	DatagramSocket serverSocket;
 	byte[] receiveData = new byte[1024];
-	byte[] sendData = new byte[1024];
+	//byte[] sendData = new byte[1024];
 	private String[] values;
-	private double Time, CamNum, Range, Bearing, Elevation;
+	private double Time = -10000, CamNum = -10000, Range = -10000, Bearing = -10000, Elevation = -10000;
 	private boolean TargetFound = false;
 	
 	public UDPForVision() {
@@ -25,18 +25,18 @@ public class UDPForVision implements Constants {
 	}
 
 	public void poke() {
-		try {
+		/*try {
 			serverSocket.setSoTimeout(10);
 		} catch (SocketException e) {
 			System.out.println("Failed to set timeout.");
 			e.printStackTrace();
 		}
-
+*/
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		try {
 			serverSocket.receive(receivePacket);
 			String sentence = new String(receivePacket.getData()); 
-			System.out.println("RECEIVED: " + sentence);
+			/*System.out.println("RECEIVED: " + sentence);
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
 		
@@ -49,7 +49,7 @@ public class UDPForVision implements Constants {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("SENT: " + String.valueOf(n));
+			System.out.println("SENT: " + String.valueOf(n));*/
 			String corrected = sentence.replaceAll("\u0000.*", "");
 			values = corrected.split(",");
 			

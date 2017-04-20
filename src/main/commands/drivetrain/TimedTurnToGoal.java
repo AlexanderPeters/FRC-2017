@@ -1,15 +1,16 @@
 package main.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 import main.Constants;
 import main.Robot;
 
-public class TurnToGoal extends Command implements Constants {
+public class TimedTurnToGoal extends TimedCommand implements Constants {
 	private double heading = -10000;
 	private int count = 0;
 	private boolean done = false;
 
-	TurnToGoal() {
+	TimedTurnToGoal(double time) {
+		super(time);
 		Robot.dt.resetGyro();
 	}
 	

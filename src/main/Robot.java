@@ -114,6 +114,8 @@ public class Robot extends IterativeRobot implements Constants{
         SmartDashboard.putDouble("Distance MinVoltage", kMinVoltageDisp);
         SmartDashboard.putDouble("Distance MaxVoltage", kMaxVoltageDisp);
         
+        SmartDashboard.putDouble("Testing MinV for BangBang", 0.0);
+        
         SmartDashboard.putDouble("Gyro", 0.0);
         SmartDashboard.putDouble("Encoder Distance", 0.0);
         SmartDashboard.putDouble("Angle Target", 0.0);

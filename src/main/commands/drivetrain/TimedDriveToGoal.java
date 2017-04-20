@@ -1,15 +1,16 @@
 package main.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 import main.Constants;
 import main.Robot;
 
-public class DriveToGoal extends Command implements Constants {
+public class TimedDriveToGoal extends TimedCommand implements Constants {
 	private double distance;
 	private int count = 0;
 	private boolean done = false;
 	
-	public DriveToGoal() {
+	public TimedDriveToGoal(double time) {
+		super(time);
 		Robot.dt.resetSensors();
 	}
 
