@@ -18,12 +18,10 @@ public class DriveVelocity extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.dt.resetSensors();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if(!Robot.dt.getPIDCanRun())
     		Robot.dt.driveVelocity(throttle, bearing);
     }
 

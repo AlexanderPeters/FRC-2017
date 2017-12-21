@@ -1,37 +1,19 @@
 package main;
 
-import java.io.IOException;
-import java.net.SocketException;
-import Util.SmartDashboardInteractions;
-import controllers.UDPController;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import lib.UDPForVision;
-import main.commands.auto.LeftGearWithDriveToNZ;
-import main.commands.auto.RightGearWithDriveToNZ;
-import main.commands.auto.centerGearOnly;
-import main.commands.auto.centerGearWithShootBlue;
-import main.commands.auto.centerGearWithShootRed;
-import main.commands.auto.centerWithDriveToNZBlue;
-import main.commands.auto.centerWithDriveToNZRed;
 import main.commands.auto.doNothing;
-import main.commands.auto.leftBaseline;
-import main.commands.auto.rightBaseline;
-import main.commands.auto.shootingWithDriveToNZBlue;
-import main.commands.auto.shootingWithDriveToNZRed;
+import main.commands.auto.baseline;
+import main.commands.auto.centerGearOnly;
 import main.subsystems.Climber;
 import main.subsystems.DriveCamera;
 import main.subsystems.DriveTrain;
-import main.subsystems.DriverAlerts;
-import main.subsystems.FlyWheel;
-import main.subsystems.Intake;
-import main.subsystems.OtherSensors;
+import main.subsystems.GearMech;
 import main.subsystems.Pneumatics;
-import main.subsystems.Stirrer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,28 +23,13 @@ import main.subsystems.Stirrer;
  * directory.
  */
 public class Robot extends IterativeRobot implements Constants{
-	public static enum GameState {
-		Initializing, Test, Teleop, Autonomous
-	}
-	public static enum RobotState {
-		Driving, Climbing, Neither
-	}
-
+	
 	public static OI oi;
 	public static DriveTrain dt;
 	public static Pneumatics pn;
+	public static GearMech gm;
 	public static Climber cl;
-	public static Intake in;
-	public static Stirrer str;
-	public static FlyWheel shooter;
 	public static DriveCamera dc;
-	public static DriverAlerts da;
-	public static OtherSensors sensors;
-	public static SmartDashboardInteractions sdb;
-	public static GameState gameState;
-	public static RobotState robotState = RobotState.Neither;
-    //public static Looper mEnabledLooper = new Looper(kEnabledLooperDt);
-    public static UDPForVision comms;
 	
     Command autoCommand;
     SendableChooser<Command> chooser;
@@ -71,76 +38,19 @@ public class Robot extends IterativeRobot implements Constants{
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
-    @SuppressWarnings("deprecation")
     public void robotInit() {
-
-		
-    	gameState = GameState.Initializing;
-		pn = new Pneumatics();	
-		str = new Stirrer();
+		pn = new Pneumatics();			
 		dt = new DriveTrain();
 		cl = new Climber();
-		in = new Intake();
-		shooter = new FlyWheel();
 		dc = new DriveCamera();
-		da = new DriverAlerts();//Must be initialized before OtherSensors which uses it by calling commands
-		sensors = new OtherSensors();
-		comms = new UDPForVision();
-		//This has to be last as the subsystems can not be null when a command requires them
-
-       //mEnabledLooper.register(new UDPController());
-        //mEnabledLooper.register(new SensorChecker());
-    
-        
-        SmartDashboard.putDouble("Turning KP Big Angle", turnInPlaceKPBigAngle);
-        SmartDashboard.putDouble("Turning KI Big Angle", turnInPlaceKIBigAngle);
-        SmartDashboard.putDouble("Turning KD Big Angle", turnInPlaceKDBigAngle);
-        SmartDashboard.putDouble("Turning MaxVoltage Big Angle", kMaxVoltageTurnBigAngle);
-        SmartDashboard.putDouble("Turning MinVoltage Big Angle", kMinVoltageTurnBigAngle);
-        
-        SmartDashboard.putDouble("Turning KP Small Angle", turnInPlaceKPSmallAngle);
-        SmartDashboard.putDouble("Turning KI Small Angle", turnInPlaceKISmallAngle);
-        SmartDashboard.putDouble("Turning KD Small Angle", turnInPlaceKDSmallAngle);
-        SmartDashboard.putDouble("Turning MaxVoltage Small Angle", kMaxVoltageTurnSmallAngle);
-        SmartDashboard.putDouble("Turning MinVoltage Small Angle", kMinVoltageTurnSmallAngle);
-
-        SmartDashboard.putDouble("Turning Tolerance", kToleranceDegreesDefault);
-        SmartDashboard.putInt("Turn In Place Controller Switch Angle", turnInPlaceControllerSwitchAngle);
-        
-        SmartDashboard.putDouble("Distance KP", displacementKP);
-        SmartDashboard.putDouble("Distance KI", displacementKI);
-        SmartDashboard.putDouble("Distance KD", displacementKD);
-        SmartDashboard.putDouble("Distance Tolerance", kToleranceDisplacementDefault);
-        SmartDashboard.putDouble("Distance MinVoltage", kMinVoltageDisp);
-        SmartDashboard.putDouble("Distance MaxVoltage", kMaxVoltageDisp);
-        
-        SmartDashboard.putDouble("Testing MinV for BangBang", 0.0);
-        
-        SmartDashboard.putDouble("Gyro", 0.0);
-        SmartDashboard.putDouble("Encoder Distance", 0.0);
-        SmartDashboard.putDouble("Angle Target", 0.0);
-        SmartDashboard.putDouble("Distance To Drive To", 0.0);
-		sdb = new SmartDashboardInteractions();
-		        
+		gm = new GearMech();		
 		oi = new OI();
        
 		chooser = new SendableChooser<Command>();
         chooser.addDefault("Do Nothing Auto", new doNothing());
-        chooser.addObject("Left Baseline Auto", new leftBaseline());
-        chooser.addObject("Right Baseline Auto", new rightBaseline());
-        
+        chooser.addObject("Baseline", new baseline());        
         chooser.addObject("Center Gear Only", new centerGearOnly());
-        chooser.addObject("Center Gear With Shooting (Blue)", new centerGearWithShootBlue());
-        chooser.addObject("Center Gear With Shooting (Red)", new centerGearWithShootRed());
-        chooser.addObject("Center Gear With Drive To NZ (Blue)", new centerWithDriveToNZBlue());
-        chooser.addObject("Center Gear With Drive To NZ (Red)", new centerWithDriveToNZRed());
-        
-        //chooser.addObject("Right Gear With Drive To NZ", new RightGearWithDriveToNZ());
-        
-        chooser.addObject("Blue Alliance Shooting", new shootingWithDriveToNZBlue());
-        chooser.addObject("Red Alliance Shooting", new shootingWithDriveToNZRed());
-        SmartDashboard.putData("Auto mode", chooser);
-        
+        SmartDashboard.putData("Auto mode", chooser);     
         
 
     }
@@ -151,8 +61,7 @@ public class Robot extends IterativeRobot implements Constants{
 	 * the robot is disabled.
      */
     public void disabledInit(){
-		// Configure loopers
-      //  mEnabledLooper.stop();
+	
     }
 	
 	public void disabledPeriodic() {
@@ -169,11 +78,7 @@ public class Robot extends IterativeRobot implements Constants{
 	 * or additional comparisons to the switch structure below with additional strings & commands.
 	 */
     public void autonomousInit() {
-    	gameState = GameState.Autonomous;
     	autoCommand = (Command) chooser.getSelected();
-    	
-    	// Configure loopers
-        //mEnabledLooper.start();
     	
     	if(autoCommand != null) autoCommand.start();
     }
@@ -182,32 +87,11 @@ public class Robot extends IterativeRobot implements Constants{
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-    	gameState = GameState.Autonomous;
-    	sdb.update();
-    	if(sdb.haveAnyTurnVarsChanged()) {
-    		dt.TurnToAngle();
-    		System.out.println("Turning PID Vars Changed");
-    	}
-    	if(sdb.haveAnyDistanceVarsChanged()) {
-    		dt.DriveDistance();
-    		System.out.println("Distance PID Vars Changed");
-    	}
-    	comms.poke();		
-    	sensors.check();
-        Scheduler.getInstance().run();
+    	Scheduler.getInstance().run();
     }
     
     public void teleopInit() {
-    	gameState = GameState.Teleop;
-    	
-    	// Configure loopers
-        //mEnabledLooper.start();
-    	
-    	/* This makes sure that the autonomous stops running when
-           teleop starts running. If you want the autonomous to 
-           continue until interrupted by another command, remove
-           this line or comment it out. */
-    	
+    
         if (autoCommand != null) autoCommand.cancel();
     }
 
@@ -215,18 +99,7 @@ public class Robot extends IterativeRobot implements Constants{
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	gameState = GameState.Teleop;
-    	sdb.update();
-    	if(sdb.haveAnyTurnVarsChanged()) {
-    		dt.TurnToAngle();
-    		System.out.println("Turning PID Vars Changed");
-    	}
-    	if(sdb.haveAnyDistanceVarsChanged()) {
-    		dt.DriveDistance();
-    		System.out.println("Distance PID Vars Changed");
-    	}
-    	comms.poke();		
-    	sensors.check();
+    	
     	Scheduler.getInstance().run();
     }
     

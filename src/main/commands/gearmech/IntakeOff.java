@@ -1,13 +1,12 @@
-package main.commands.climber;
+package main.commands.gearmech;
 
 import edu.wpi.first.wpilibj.command.Command;
 import main.Constants;
 import main.Robot;
 
-public class WinchOff extends Command implements Constants{
-
-	public WinchOff() {
-        requires(Robot.cl);
+public class IntakeOff extends Command implements Constants {
+	public IntakeOff() {
+        requires(Robot.gm);
     }
 	
 	@Override
@@ -19,7 +18,8 @@ public class WinchOff extends Command implements Constants{
 	@Override
 	protected void execute() {
 		// TODO Auto-generated method stub
-		Robot.cl.spin(0);
+			Robot.gm.spin(gmIntakeMotorOff);
+		
 	}
 
 	@Override
@@ -39,5 +39,5 @@ public class WinchOff extends Command implements Constants{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
